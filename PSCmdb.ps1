@@ -796,7 +796,7 @@ function Get-CmdbCategory {
 }
 
 function Set-CmdbCategory {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
         [int]$Id,
@@ -816,22 +816,103 @@ function Set-CmdbCategory {
 
     $Params = @{}
     $Params.Add("objID", $Id)
+
     switch ($PSCmdlet.ParameterSetName) {
         "Category" {$Params.Add("category", $Category); break }
         "CatgId" {$Params.Add("catgID", $CatgId); break }
         "CatsId" {$Params.Add("catsID", $CatsId); break }
     }
+
     $Params.Add("data", $Data)
 
-    $ResultObj = Invoke-Cmdb -Method "cmdb.category.update" -Params $Params
+    if ($PSCmdlet.ShouldProcess("Updating category on object $Id")) {
+        $ResultObj = Invoke-Cmdb -Method "cmdb.category.update" -Params $Params
 
-    return $ResultObj
+        return $ResultObj
+    }
 }
-#Get-CmdbCategoryInfo -CatgId 38
-Set-CmdbCategory -Id 3411 -CatgId 38 -Data @{"price"=10000}
+
+function New-CmdbCategory {
+    [cmdletbinding(SupportsShouldProcess=$true)]
+    Param (
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
+        [int]$Id,
+
+        [Parameter(Mandatory = $true, ParameterSetName="Category")]
+        [string]$Category,
+
+        [Parameter(Mandatory = $true, ParameterSetName="CatgId")]
+        [int]$CatgId,
+
+        [Parameter(Mandatory = $true, ParameterSetName="CatsId")]
+        [int]$CatsId,
+
+        [Parameter(Mandatory=$true)]
+        [Hashtable]$Data
+    )
+
+    $Params = @{}
+    $Params.Add("objID", $Id)
+
+    switch ($PSCmdlet.ParameterSetName) {
+        "Category" {$Params.Add("category", $Category); break }
+        "CatgId" {$Params.Add("catgID", $CatgId); break }
+        "CatsId" {$Params.Add("catsID", $CatsId); break }
+    }
+
+    $Params.Add("data", $Data)
+
+    if ($PSCmdlet.ShouldProcess("Creating category on object $Id")) {
+        $ResultObj = Invoke-Cmdb -Method "cmdb.category.create" -Params $Params
+
+        return $ResultObj
+    }
+}
+
+function Remove-CmdbCategory {
+    [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='High')]    
+    Param (
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0)]
+        [int]$Id,
+
+        [Parameter(Mandatory = $true, ParameterSetName="Category")]
+        [string]$Category,
+
+        [Parameter(Mandatory = $true, ParameterSetName="CatgId")]
+        [int]$CatgId,
+
+        [Parameter(Mandatory = $true, ParameterSetName="CatsId")]
+        [int]$CatsId,
+
+        [Parameter(Mandatory = $true)]
+        [int]$ElementId
+               
+    )
+    $Params = @{}
+
+    $Params.Add("id", $Id)
+    
+    switch ($PSCmdlet.ParameterSetName) {
+        "Category" {$Params.Add("category", $Category); break }
+        "CatgId" {$Params.Add("catgID", $CatgId); break }
+        "CatsId" {$Params.Add("catsID", $CatsId); break }
+    }
+
+    if ($PSBoundParameters.ContainsKey("ElementId")) {
+        $Params.Add("cateID", $ElementId)
+    }
+
+    if ($PSCmdlet.ShouldProcess("Deleting Category from object $id")) {
+        $ResultObj = Invoke-Cmdb -Method "cmdb.category.delete" -Params $Params
+        return $ResultObj
+    }
+}
 
 function Get-CmdbCategoryInfo {
     Param (
+        [Parameter(Mandatory=$true, ParameterSetName="Category")]
+        [String]$Category,
+
         [Parameter(Mandatory=$true, ParameterSetName="CatgId")]
         [int]$CatgId,
 
@@ -842,8 +923,9 @@ function Get-CmdbCategoryInfo {
     $Params = @{}
 
     Switch ($PSCmdlet.ParameterSetName) {
-        "CatgId" { $Params.Add("catgID",$CatgId); Break }
-        "CatsId" { $Params.Add("catsID",$CatsId); Break }
+        "Category" { $Params.Add("category", $Category); break }
+        "CatgId" { $Params.Add("catgID",$CatgId); break }
+        "CatsId" { $Params.Add("catsID",$CatsId); break }
     }
 
     $resultObj = Invoke-Cmdb -Method "cmdb.category_info" -Params $Params
@@ -867,6 +949,87 @@ function Get-CmdbDialog {
 
     return $ResultObj
 }
+
+function Set-CmdbDialog {
+    [cmdletbinding(SupportsShouldProcess=$true)]
+    Param (
+        [Parameter(Mandatory=$true, Position=0)]
+        [String]$Category,
+
+        [Parameter(Mandatory=$true, Position=1)]
+        [String]$Property,
+
+        [Parameter(Mandatory=$true, Position=2)]
+        [String]$Value,
+
+        [Parameter(Mandatory=$true, Position=3)]
+        [Int]$ElementId
+    )
+
+    $Params = @{}
+    $Params.Add("category",$Category)
+    $Params.Add("property",$Property)
+    $Params.Add("value",$Value)
+    $Params.Add("entry_id",$ElementId)
+
+    if($PSCmdlet.ShouldProcess("Updating dialog entry id $ElementID for $Category - $Property with value $Value")) {
+        $ResultObj = Invoke-Cmdb -Method "cmdb.dialog.update" -Params $Params
+
+        return $ResultObj
+    }
+}
+function New-CmdbDialog {
+    [cmdletbinding(SupportsShouldProcess=$true)]
+    Param (
+        [Parameter(Mandatory=$true, Position=0)]
+        [String]$Category,
+
+        [Parameter(Mandatory=$true, Position=1)]
+        [String]$Property,
+
+        [Parameter(Mandatory=$true, Position=2)]
+        [String]$Value
+    )
+
+    $Params = @{}
+    $Params.Add("category",$Category)
+    $Params.Add("property",$Property)
+    $Params.Add("value",$Value)
+
+    if($PSCmdlet.ShouldProcess("Create new Dialog entry $Category - $Property with value $Value")) {
+        $ResultObj = Invoke-Cmdb -Method "cmdb.dialog.create" -Params $Params
+
+        return $ResultObj
+    }
+}
+
+function Remove-CmdbDialog {
+    [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='High')]
+    Param (
+        [Parameter(Mandatory=$true, Position=0)]
+        [String]$Category,
+
+        [Parameter(Mandatory=$true, Position=1)]
+        [String]$Property,
+
+        [Parameter(Mandatory=$true, Position=3)]
+        [Int]$ElementId
+    )
+
+    $Params = @{}
+    $Params.Add("category",$Category)
+    $Params.Add("property",$Property)   
+    $Params.Add("entry_id",$ElementId)
+
+    if($PSCmdlet.ShouldProcess("Removing dialog entry id $ElementID for $Category - $Property")) {
+        $ResultObj = Invoke-Cmdb -Method "cmdb.dialog.delete" -Params $Params
+
+        return $ResultObj
+    }
+}
+#Get-CmdbCategoryInfo -Category "C__CATG__ACCOUNTING"
+#Get-CmdbConstants | ? {$_.title -like "*Accounting*"} 
+Remove-CmdbDialog -Category "C__CATG__ACCOUNTING" -Property "account" -ElementId 10
 
 function Get-CmdbReport {
     Param(
