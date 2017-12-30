@@ -51,7 +51,15 @@ function Invoke-Cmdb {
 
     if ($InvokeResult.StatusCode -eq 200) {
 
-        $ContentJson = ConvertFrom-Json $InvokeResult.content
+        #Synetics puts numbers in the JSON response in quotes. This breaking type conversion into integer.
+        #Before converting the JSON to an PSObject we remove quotes from numbers
+        
+        $Regex = '(?m)"([0-9]+)"'    
+        #The regex is matching number between "". (?m) defines multiple occurance
+
+        $TempJson = $InvokeResult.content -replace $Regex, '$1'
+        
+        $ContentJson = ConvertFrom-Json $TempJson
 
         #Check for error object
         if ($ContentJson.error -ne $null) {
@@ -235,12 +243,75 @@ function Get-CmdbObject {
 
     $ResultObj = Invoke-Cmdb -Method "cmdb.object.read" -Params $Params
 
+    
     $resultObj.PSObject.TypeNames.Insert(0,'Cmdb.Object')
     $resultObj | Add-Member MemberSet PSStandardMembers $PSStandardMembers
 
     return $ResultObj
 
 }
+
+function Set-CmdbObject {
+    [cmdletbinding()]
+    Param (
+        [Parameter(Mandatory=$true, ParameterSetName="Id" ,Position=0)]
+        [int]$Id,
+
+        [Parameter(Mandatory=$true, ParameterSetName="Object" ,Position=0, ValueFromPipeline)]
+        [ValidateScript({ $_.PSObject.TypeNames[0] -eq 'Cmdb.Object' })]
+        [PSObject]$InputObject,
+
+        [Parameter(Mandatory=$true)]
+        [string]$Title    
+    )
+
+    Process {
+
+        $Params = @{}
+        switch ($PSCmdlet.ParameterSetName) {
+            "Id" { $Params.Add("id", $Id); break }
+            "Object" { $Params.Add("id", $InputObject.id); break }
+        }
+        #$Params.Add("id", $Id)
+        $Params.Add("title", $title)
+
+        $ResultObj = Invoke-Cmdb -Method "cmdb.object.update" -Params $Params
+
+        if ($ResultObj.success) {
+            return $ResultObj.message
+        }
+    }
+
+}
+
+Trace-Command -Name ParameterBinding -Expression { Get-CmdbObject -Id 3411 | Set-CmdbObject -Title "web009-1-pipe"} -PSHost
+#Get-CmdbObject -Id 3411 | Get-Member
+function New-CmdbObject { 
+    Param(
+        [Parameter(Mandatory=$true, ParameterSetName="ByID")]
+        [int]$TypeId,
+
+        [Parameter(Mandatory=$true, ParameterSetName="ByConst")]
+        [string]$TypeConst,
+
+        [Parameter(Mandatory=$true)]
+        [string]$Title        
+    )
+
+    $Params = @{}
+    switch ($PSCmdlet.ParameterSetName){
+        "ByID" {$Params.Add("type", $TypeId); break}
+        "ByConst" {$Params.Add("type", $TypeConst); break}
+    }
+
+    $Params.Add("title", $Title)
+
+    $ResultObj = Invoke-Cmdb -Method "cmdb.object.create" -Params $Params
+
+    return $ResultObj
+}
+
+#New-CmdbObject -TypeConst "C__OBJTYPE__SERVER" -Title "APIServer001" | Get-Member
 
 function Get-CmdbObjectTypes {
     Param (
@@ -572,7 +643,7 @@ function Get-CmdbCategoryIpAddress {
 #Get-CmdbConstants | ? {$_.Title -like "Address"}
 #Get-CmdbCategory -id 3411 -CatgId 47
 #Get-CmdbObject -Id 3312
-Get-CmdbCategoryIpAddress -Id 3411
+#Get-CmdbCategoryIpAddress -Id 3411
 
 function Get-CmdbCategory {
 <#
