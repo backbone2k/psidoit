@@ -30,7 +30,6 @@ function Invoke-Cmdb {
     }
 
     #Add the API Key to the params if it is not already defined
-
     if (!$RequestBody.params.ContainsKey("apikey")) {
         $RequestBody.params.Add("apikey", $global:cmdbApiKey)
     }
@@ -51,11 +50,11 @@ function Invoke-Cmdb {
 
     if ($InvokeResult.StatusCode -eq 200) {
 
-        #Synetics puts numbers in the JSON response in quotes. This breaking type conversion into integer.
-        #Before converting the JSON to an PSObject we remove quotes from numbers
+        #i-doit puts numbers in the JSON response in quotes :-( - This is breaking type conversion into integer when calling ConvertFrom-Json
+        #Before converting the JSON to an PSObject we remove quotes from numbers with this little magic regex!
         
         $Regex = '(?m)"([0-9]+)"'    
-        #The regex is matching number between "". (?m) defines multiple occurance
+        #The regex is matching numbers between "" - (?m) defines multiple occurance
 
         $TempJson = $InvokeResult.content -replace $Regex, '$1'
         
@@ -131,14 +130,27 @@ function Connect-Cmdb {
     }
 
     if (!$result.error) {
-        $objResult = [pscustomobject]@{
+
+
+        $LoginResult = [pscustomobject]@{
             Account  = $result.result.name
             Tenant   = $result.result.'client-name'
             TenantId = $result.result.'client-id'
         }
+
         $global:cmdbSession = $result.result.'session-id'
 
-
+        #Before we begin, we check that we are running against correct version. Also we know that everything
+        #is working.
+        $CmdbVer = [Version](Get-CmdbVersion).version
+        if (!$CmdbVer) {
+            Throw "There was an unkown problem getting the i-doit version."
+        }
+        elseif (($CmdbVer.Major -lt 1) -or ($CmdbVer.Minor -lt 7)) {
+            Throw "PSCmdb needs minimum Version 1.7 to work. You are running i-doit $($CmdbVer.Major).$($CmdbVer.Minor)"
+        }
+        
+        return $LoginResult
 
     }
 
@@ -284,8 +296,6 @@ function Set-CmdbObject {
 
 }
 
-Trace-Command -Name ParameterBinding -Expression { Get-CmdbObject -Id 3411 | Set-CmdbObject -Title "web009-1-pipe"} -PSHost
-#Get-CmdbObject -Id 3411 | Get-Member
 function New-CmdbObject { 
     Param(
         [Parameter(Mandatory=$true, ParameterSetName="ByID")]
@@ -311,7 +321,70 @@ function New-CmdbObject {
     return $ResultObj
 }
 
-#New-CmdbObject -TypeConst "C__OBJTYPE__SERVER" -Title "APIServer001" | Get-Member
+function Remove-CmdbObject {
+    [cmdletbinding(SupportsShouldProcess, ConfirmImpact='High')]
+    Param (
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0, ParameterSetName="Default")]
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0, ParameterSetName="Archive")]
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0, ParameterSetName="Delete")]
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0, ParameterSetName="Purge")]
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0, ParameterSetName="Quickpurge")]
+        [int]$Id,
+
+        [Parameter(Mandatory=$true, ParameterSetName="Archive")]
+        [Switch]$Archive,
+
+        [Parameter(Mandatory=$true, ParameterSetName="Delete")]
+        [Switch]$Delete,
+
+        [Parameter(Mandatory=$true, ParameterSetName="Purge")]
+        [Switch]$Purge,
+
+        [Parameter(Mandatory=$true, ParameterSetName="Quickpurge")]
+        [Switch]$Quickpurge
+    )
+    Begin {
+        $cStatus = @{
+            "Archive" = "C__RECORD_STATUS__ARCHIVED"
+            "Delete" = "C__RECORD_STATUS__DELETED"
+            "Purge" = "C__RECORD_STATUS__PURGE"
+        }
+
+    }
+    Process {
+        $Params = @{}  
+        $Params.Add("id", $Id)
+        if ($PSCmdlet.ParameterSetName -eq "Default") {
+            $Action = "Archive"
+        } 
+        else {
+            $Action = $PSCmdlet.ParameterSetName
+        }
+
+        if ($Action -eq "Quickpurge") {
+            $Method = "cmdb.object.quickpurge"
+        }
+        else {
+            $Method = "cmdb.object.delete"
+            switch ($Action) {
+                "Archive" { $Params.Add("status", $cStatus.Archive); break}
+                "Delete" { $Params.Add("status", $cStatus.Delete); break}
+                "Purge" { $Params.Add("status", $cStatus.Purge); break}
+            }
+        }
+        if ($PSCmdlet.ShouldProcess("Action: $Action object $Id")) {
+            $ResultObj = Invoke-Cmdb -Method $Method -Params $Params
+
+            return $ResultObj
+        }
+        
+    }
+}
+Connect-Cmdb
+New-CmdbObject -TypeId 5 -Title "Test"
+Remove-CmdbObject -Id 5145 -Quickpurge
+Get-CmdbObject -Id 5145
+#Remove-CmdbObject -Id 144 -Archive
 
 function Get-CmdbObjectTypes {
     Param (
