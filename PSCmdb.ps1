@@ -230,6 +230,7 @@ function Find-CmdbObjects {
 
 }
 
+#region CmdbObject functions
 function Get-CmdbObject {
 
     param (
@@ -264,14 +265,10 @@ function Get-CmdbObject {
 }
 
 function Set-CmdbObject {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
-        [Parameter(Mandatory=$true, ParameterSetName="Id" ,Position=0)]
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0)]
         [int]$Id,
-
-        [Parameter(Mandatory=$true, ParameterSetName="Object" ,Position=0, ValueFromPipeline)]
-        [ValidateScript({ $_.PSObject.TypeNames[0] -eq 'Cmdb.Object' })]
-        [PSObject]$InputObject,
 
         [Parameter(Mandatory=$true)]
         [string]$Title    
@@ -280,14 +277,14 @@ function Set-CmdbObject {
     Process {
 
         $Params = @{}
-        switch ($PSCmdlet.ParameterSetName) {
-            "Id" { $Params.Add("id", $Id); break }
-            "Object" { $Params.Add("id", $InputObject.id); break }
-        }
-        #$Params.Add("id", $Id)
-        $Params.Add("title", $title)
+        $Params.Add("id", $Id)
 
-        $ResultObj = Invoke-Cmdb -Method "cmdb.object.update" -Params $Params
+
+        $Params.Add("title", $title)
+        
+        If ($PSCmdlet.ShouldProcess("Updating title for object id $Id to $title")) { 
+            $ResultObj = Invoke-Cmdb -Method "cmdb.object.update" -Params $Params
+        }
 
         if ($ResultObj.success) {
             return $ResultObj.message
@@ -380,11 +377,8 @@ function Remove-CmdbObject {
         
     }
 }
-Connect-Cmdb
-New-CmdbObject -TypeId 5 -Title "Test"
-Remove-CmdbObject -Id 5145 -Quickpurge
-Get-CmdbObject -Id 5145
-#Remove-CmdbObject -Id 144 -Archive
+
+#endregion
 
 function Get-CmdbObjectTypes {
     Param (
@@ -754,7 +748,7 @@ function Get-CmdbCategory {
 #>
     [cmdletbinding()]
     Param (
-        [Parameter(Mandatory = $true, ValueFromPipeline=$true)]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName=$true, Position=0)]
         [int]$Id,
 
         [Parameter(Mandatory = $true, ParameterSetName="Category")]
@@ -800,6 +794,41 @@ function Get-CmdbCategory {
         return $resultObj
     }
 }
+
+function Set-CmdbCategory {
+    [cmdletbinding()]
+    Param (
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
+        [int]$Id,
+
+        [Parameter(Mandatory = $true, ParameterSetName="Category")]
+        [string]$Category,
+
+        [Parameter(Mandatory = $true, ParameterSetName="CatgId")]
+        [int]$CatgId,
+
+        [Parameter(Mandatory = $true, ParameterSetName="CatsId")]
+        [int]$CatsId,
+
+        [Parameter(Mandatory=$true)]
+        [Hashtable]$Data
+    )
+
+    $Params = @{}
+    $Params.Add("objID", $Id)
+    switch ($PSCmdlet.ParameterSetName) {
+        "Category" {$Params.Add("category", $Category); break }
+        "CatgId" {$Params.Add("catgID", $CatgId); break }
+        "CatsId" {$Params.Add("catsID", $CatsId); break }
+    }
+    $Params.Add("data", $Data)
+
+    $ResultObj = Invoke-Cmdb -Method "cmdb.category.update" -Params $Params
+
+    return $ResultObj
+}
+#Get-CmdbCategoryInfo -CatgId 38
+Set-CmdbCategory -Id 3411 -CatgId 38 -Data @{"price"=10000}
 
 function Get-CmdbCategoryInfo {
     Param (
