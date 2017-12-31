@@ -15,9 +15,11 @@ function Invoke-Cmdb {
         [ValidateNotNull()]
         [Hashtable]$Params,
 
-        $uri = "https://demo.i-doit.com/src/jsonrpc.php"
+        [Parameter(Mandatory=$false)]
+        [Hashtable]$Headers,
 
-
+        [Parameter(Mandatory=$false)]
+        [String]$Uri
     )
 
     $RequestID = [Guid]::NewGuid()
@@ -30,22 +32,31 @@ function Invoke-Cmdb {
     }
 
     #Add the API Key to the params if it is not already defined
-    if (!$RequestBody.params.ContainsKey("apikey")) {
-        $RequestBody.params.Add("apikey", $global:cmdbApiKey)
+    if (!$RequestBody.params.ContainsKey("ApiKey")) {
+        $RequestBody.params.Add("apikey", $Global:cmdbApiKey)
+    }
+    if (!$RequestBody.params.ContainsKey("Uri")) {
+        if ($Global:CmdbUri.Length -gt 0) {
+            $Uri = $Global:cmdbUri
+        }
     }
 
     $RequestBody = ConvertTo-Json -InputObject $RequestBody -Depth 4
+
+    if (!$PSBoundParameters.ContainsKey("Headers")) {
+        $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Session" = $global:cmdbSession}
+    }
+    
 
     #define higher tls version - otherwise tls1.0 will fail on more secure web sockets
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
     try {
-        $InvokeResult = Invoke-WebRequest -Uri "https://demo.i-doit.com/src/jsonrpc.php" -Method Post -Body $RequestBody -Headers @{"Content-Type" = "application/json"; "X-RPC-Auth-Session" = $global:cmdbSession}
+        $InvokeResult = Invoke-WebRequest -Uri $Uri -Method Post -Body $RequestBody -Headers $Headers
     }
+
     catch {
-
         Throw
-
     }
 
     if ($InvokeResult.StatusCode -eq 200) {
@@ -97,70 +108,82 @@ function Disconnect-Cmdb {
 
 function Connect-Cmdb {
 
+    [cmdletbinding()]
     param(
-        #[Parameter(Mandatory=$true)]
-        $username = "admin",
+        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=0)]
+        $Username,
 
-        #[Parameter(Mandatory=$true)]
-        $password = "admin",
+        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=1)]
+        [String]$Password,
 
-        #[Parameter(Mandatory=$true)]
-        [string]$apiKey = "c1ia5q"
+        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=3)]
+        [string]$ApiKey, # = "c1ia5q"
+    
+        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=4)]
+        [string]$Uri,
+
+        [Parameter(Mandatory=$true, ParameterSetName="SetB", Position=0)]
+        [ValidateScript({
+            $RequiredKeys= @("Username","Password","ApiKey","Uri")
+            $ProvidedKeys = @($_.Keys)
+            -not @($RequiredKeys| Where-Object {$ProvidedKeys -notcontains $_}).Count
+        })]
+        [hashtable]$Settings,
+
+        [Parameter(Mandatory=$true, ParameterSetName="SetC", Position=0)]
+        [ValidateNotNullOrEmpty()]
+        [String]$ConfigFile
+
+
     )
 
-    $global:cmdbApiKey = $apiKey
-
-
-    $body = @{
-        "jsonrpc" = "2.0"
-        "method"  = "idoit.login"
-        "params"  = @{
-            "apikey" = $global:cmdbApiKey
+    if ($PSCmdlet.ParameterSetName -eq "SetA") {
+        $SettingsParams = @{
+            Username = $Username
+            Password = $Password
+            ApiKey = $ApiKey
+            Uri = $Uri
         }
-    }
-    #ConvertTo-Json $body
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-    try {
-        $result = Convertfrom-Json ((Invoke-WebRequest -Uri "https://demo.i-doit.com/src/jsonrpc.php" -Method Post -Body (ConvertTo-Json $body) -Headers @{"Content-Type" = "application/json"; "X-RPC-Auth-Username" = $username; "X-RPC-Auth-Password" = $password}).Content)
-    }
-
-    catch {
-        throw
-
-    }
-
-    if (!$result.error) {
-
-
-        $LoginResult = [pscustomobject]@{
-            Account  = $result.result.name
-            Tenant   = $result.result.'client-name'
-            TenantId = $result.result.'client-id'
-        }
-
-        $global:cmdbSession = $result.result.'session-id'
-
-        #Before we begin, we check that we are running against correct version. Also we know that everything
-        #is working.
-        $CmdbVer = [Version](Get-CmdbVersion).version
-        if (!$CmdbVer) {
-            Throw "There was an unkown problem getting the i-doit version."
-        }
-        elseif (($CmdbVer.Major -lt 1) -or ($CmdbVer.Minor -lt 7)) {
-            Throw "PSCmdb needs minimum Version 1.7 to work. You are running i-doit $($CmdbVer.Major).$($CmdbVer.Minor)"
-        }
-        
-        return $LoginResult
-
+       
+    } elseif ($PSCmdlet.ParameterSetName -eq "SetC") {
+        $SettingsParams = Get-Content $ConfigFile -Raw | ConvertFrom-Json
     }
 
     else {
-        Throw "Error code $($json.error.code) - $($json.error.data.error)"
+        $SettingsParams = $Settings
     }
 
+    $Global:CmdbApiKey = $SettingsParams.ApiKey
+    $Global:CmdbUri = $SettingsParams.Uri
+    
+    $Params = @{}
+    $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Username" = $SettingsParams.Username; "X-RPC-Auth-Password" = $SettingsParams.Password}
+    
+    $ResultObj = Invoke-Cmdb -Method "idoit.login" -Params $Params -Headers $Headers -Uri $SettingsParams.Uri
 
+    $LoginResult = [pscustomobject]@{
+        Account  = $ResultObj.name
+        Tenant   = $ResultObj.'client-name'
+        TenantId = $ResultObj.'client-id'
+    }
+
+    $Global:cmdbSession = $ResultObj.'session-id'
+
+    #Before we begin, we check that we are running against correct version. Also we know that everything
+    #is working.
+    $CmdbVer = [Version](Get-CmdbVersion).version
+    if (!$CmdbVer) {
+        Throw "There was an unkown problem getting the i-doit version."
+    }
+    elseif (($CmdbVer.Major -lt 1) -or ($CmdbVer.Minor -lt 7)) {
+        Throw "PSCmdb needs minimum Version 1.7 to work. You are running i-doit $($CmdbVer.Major).$($CmdbVer.Minor)"
+    }
+    
+    return $LoginResult
 }
 
+#$settings = @{Username="admin";Password="admin";uri="https://demo.i-doit.com/src/jsonrpc.php";ApiKey="c1ia5q"}
+Connect-Cmdb -ConfigFile .\settings.json
 function Get-CmdbVersion {
     $Params = @{}
 
