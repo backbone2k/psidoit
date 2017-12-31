@@ -293,30 +293,92 @@ function Set-CmdbObject {
 
 }
 
-function New-CmdbObject { 
-    Param(
-        [Parameter(Mandatory=$true, ParameterSetName="ByID")]
-        [int]$TypeId,
-
-        [Parameter(Mandatory=$true, ParameterSetName="ByConst")]
-        [string]$TypeConst,
+function New-CmdbObject {
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory=$true, Position=0)]
+        [Alias("TypeId")]
+        $Type,
 
         [Parameter(Mandatory=$true)]
         [string]$Title        
     )
 
-    $Params = @{}
-    switch ($PSCmdlet.ParameterSetName){
-        "ByID" {$Params.Add("type", $TypeId); break}
-        "ByConst" {$Params.Add("type", $TypeConst); break}
+    dynamicParam {
+        # Set the dynamic parameters' name
+        $ParamName_Category = "Category"
+        # Create the collection of attributes
+        $AttributeCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+        # Create and set the parameters' attributes
+        $ParameterAttribute = New-Object System.Management.Automation.ParameterAttribute
+        $ParameterAttribute.Mandatory = $false
+        #$ParameterAttribute.Position = 1
+        # Add the attributes to the attributes collection
+        $AttributeCollection.Add($ParameterAttribute) 
+        # Create the dictionary 
+        $RuntimeParameterDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+        # Generate and set the ValidateSet             
+        $arrSet = (Get-CmdbDialog -Category "C__CATG__GLOBAL" -Property "category").title
+        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)    
+        # Add the ValidateSet to the attributes collection
+        $AttributeCollection.Add($ValidateSetAttribute)
+        # Create and return the dynamic parameter
+        $RuntimeParameter = New-Object System.Management.Automation.RuntimeDefinedParameter($ParamName_Category, [string], $AttributeCollection)
+        $RuntimeParameterDictionary.Add($ParamName_Category, $RuntimeParameter)
+
+        $ParamName_Purpose = "Purpose"
+        # Create the collection of attributes
+        $AttributeCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+        # Create and set the parameters' attributes
+        $ParameterAttribute = New-Object System.Management.Automation.ParameterAttribute
+        $ParameterAttribute.Mandatory = $false
+        #$ParameterAttribute.Position = 1
+        # Add the attributes to the attributes collection
+        $AttributeCollection.Add($ParameterAttribute) 
+        # Generate and set the ValidateSet             
+        $arrSet = (Get-CmdbDialog -Category "C__CATG__GLOBAL" -Property "purpose").title
+        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)    
+        # Add the ValidateSet to the attributes collection
+        $AttributeCollection.Add($ValidateSetAttribute)
+        # Create and return the dynamic parameter
+        $RuntimeParameter = New-Object System.Management.Automation.RuntimeDefinedParameter($ParamName_Purpose, [string], $AttributeCollection)
+        $RuntimeParameterDictionary.Add($ParamName_Purpose, $RuntimeParameter)
+
+        return $RuntimeParameterDictionary
     }
 
-    $Params.Add("title", $Title)
+    begin {
+        $Category = $PsBoundParameters[$ParamName_Category]
+        $Purpose =  $PsBoundParameters[$ParamName_Purpose]
+        if ($Category) {
+            $CategoryElementId = (Get-CmdbDialog -Category "C__CATG__GLOBAL" -Property "category" | Where-Object {$_.title -eq $Category }).id
+        }
 
-    $ResultObj = Invoke-Cmdb -Method "cmdb.object.create" -Params $Params
+        if ($Purpose) {
+            $PurposeElementId = (Get-CmdbDialog -Category "C__CATG__GLOBAL" -Property "purpose" | Where-Object {$_.title -eq $Purpose }).id
+        }
 
-    return $ResultObj
+    
+    }
+
+    process {
+        
+        $Params = @{}
+        $Params.Add("type", $Type)
+        $Params.Add("title", $Title)
+        if ($Category) {
+            $Params.Add("category", $CategoryElementId)
+        }
+        if ($Purpose) {
+            $Params.Add("purpose", $PurposeElementId)
+        }
+        $ResultObj = Invoke-Cmdb -Method "cmdb.object.create" -Params $Params
+
+        return $ResultObj
+    }
 }
+
+New-CmdbObject -Type "C__OBJTYPE__SERVER" -Title "Test2" -Category 'Das CMDB-Projekt'
 
 function Remove-CmdbObject {
     [cmdletbinding(SupportsShouldProcess, ConfirmImpact='High')]
@@ -653,7 +715,6 @@ function Get-CmdbServers {
 
 }
 
-
 function Get-CmdbCategoryAccounting {
 
     [cmdletbinding()]
@@ -707,10 +768,6 @@ function Get-CmdbCategoryIpAddress {
         $resultObj
     }
 }
-#Get-CmdbConstants | ? {$_.Title -like "Address"}
-#Get-CmdbCategory -id 3411 -CatgId 47
-#Get-CmdbObject -Id 3312
-#Get-CmdbCategoryIpAddress -Id 3411
 
 function Get-CmdbCategory {
 <#
@@ -1027,9 +1084,6 @@ function Remove-CmdbDialog {
         return $ResultObj
     }
 }
-#Get-CmdbCategoryInfo -Category "C__CATG__ACCOUNTING"
-#Get-CmdbConstants | ? {$_.title -like "*Accounting*"} 
-Remove-CmdbDialog -Category "C__CATG__ACCOUNTING" -Property "account" -ElementId 10
 
 function Get-CmdbReport {
     Param(
@@ -1048,17 +1102,35 @@ function Get-CmdbReport {
 }
 
 function Get-CmdbObjectTypeCategories {
-    Param (
-        [Parameter(Mandatory=$true, Position=0)]
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0)]
+        [Alias("TypeId")]
         $Type
     )
 
-    $Params = @{}
-    $Params.Add("type", $Type)
+    process {
+        $Params = @{}
+        $Params.Add("type", $Type)
 
-    $ResultObj = Invoke-Cmdb -Method "cmdb.object_type_categories.read" -Params $Params
+        $ResultObj = Invoke-Cmdb -Method "cmdb.object_type_categories.read" -Params $Params
 
-    return $ResultObj
+        #idoit delivers two arrays, depending of global or specific categories. From a PowerShell
+        #point of view this is ugly - so we flatten the result into one PSObject.
+
+        $ModifiedResultObj = @()
+        foreach ($o in $ResultObj.PSObject.Properties) {
+
+            foreach ($p in $ResultObj.($o.Name)) {
+                $TempObj = $p
+                $TempObj | Add-Member -MemberType NoteProperty -Name "type" -Value $o.Name
+                $ModifiedResultObj += $TempObj
+            }
+
+        }
+
+        return $ModifiedResultObj
+    }
 }
 
 function Get-CmdbObjectTypeGroups {
@@ -1093,7 +1165,6 @@ function Get-CmdbObjectTypeGroups {
 
     return $ResultObj
 }
-
 
 function get-cmdbResponsibles-xx {
 
