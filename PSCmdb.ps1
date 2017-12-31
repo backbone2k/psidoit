@@ -182,8 +182,6 @@ function Connect-Cmdb {
     return $LoginResult
 }
 
-#$settings = @{Username="admin";Password="admin";uri="https://demo.i-doit.com/src/jsonrpc.php";ApiKey="c1ia5q"}
-Connect-Cmdb -ConfigFile .\settings.json
 function Get-CmdbVersion {
     $Params = @{}
 
@@ -337,7 +335,6 @@ function Set-CmdbObject {
     }
 
 }
-
 function New-CmdbObject {
 <#
     .SYNOPSIS
@@ -1112,6 +1109,7 @@ function Set-CmdbDialog {
         return $ResultObj
     }
 }
+
 function New-CmdbDialog {
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
