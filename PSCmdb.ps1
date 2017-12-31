@@ -265,6 +265,28 @@ function Get-CmdbObject {
 }
 
 function Set-CmdbObject {
+<#
+    .SYNOPSIS
+    Set-CmdbObject
+
+    .DESCRIPTION
+    Set-CmdbObject lets you modify an existing objects title . 
+
+    .PARAMETER Type
+    This parameter either the type id of the object you want to modify.
+
+    .PARAMETER Title
+    Defines  the new title for the object you are modifing.
+    
+    .EXAMPLE
+    PS> Set-CmdbObject -Id 1234 -Title "srv12345.domain.de"
+    
+    This will change the title for object 1234 to srv12345.domain.de
+
+    .NOTES
+    Version
+    1.0.0     29.12.2017  CB  initial release    
+#>    
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0)]
@@ -294,6 +316,39 @@ function Set-CmdbObject {
 }
 
 function New-CmdbObject {
+<#
+    .SYNOPSIS
+    New-CmdbObject
+
+    .DESCRIPTION
+    New-CmdbObject lets you create a new object. 
+
+    DYNAMIC PARAMETERS
+    -Category <String>
+        This parameter defines the dialog category on the general category. It is a dynamic parameter 
+        that will pull the available values in real time.
+
+    -Purpose <String>
+        This parameter defines the dialog purpose on the general category. It is a dynamic parameter 
+        that will pull the available values in real time.
+
+    .PARAMETER Type
+    This parameter either the type id or the the type name of the object you wan't to create.
+
+    .PARAMETER Title
+    This the title of the object you are creating.
+
+    
+    .EXAMPLE
+    PS> New-CmdbObject -Type 5 -Title "srv12345.domain.de" -Purpose "Production"
+    
+    This will create a new Object of type 5 (C__OBJTYPE__SERVER) with the name srv12345.domain.de
+    and the purpose "Production"
+
+    .NOTES
+    Version
+    1.0.0     29.12.2017  CB  initial release
+#>
     [cmdletbinding()]
     param (
         [Parameter(Mandatory=$true, Position=0)]
@@ -305,14 +360,15 @@ function New-CmdbObject {
     )
 
     dynamicParam {
-        # Set the dynamic parameters' name
         $ParamName_Category = "Category"
+
         # Create the collection of attributes
         $AttributeCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+
         # Create and set the parameters' attributes
         $ParameterAttribute = New-Object System.Management.Automation.ParameterAttribute
         $ParameterAttribute.Mandatory = $false
-        #$ParameterAttribute.Position = 1
+
         # Add the attributes to the attributes collection
         $AttributeCollection.Add($ParameterAttribute) 
         # Create the dictionary 
@@ -377,8 +433,6 @@ function New-CmdbObject {
         return $ResultObj
     }
 }
-
-New-CmdbObject -Type "C__OBJTYPE__SERVER" -Title "Test2" -Category 'Das CMDB-Projekt'
 
 function Remove-CmdbObject {
     [cmdletbinding(SupportsShouldProcess, ConfirmImpact='High')]
@@ -1249,3 +1303,5 @@ function measure-cmdbQuality-xx {
 #Get-CmdbObjectTypes -Title "%l Maschines%" -CountObjects
 
 #Get-CmdbObject -Id 3411
+
+#New-CmdbObject -Type "C__OBJTYPE__SERVER" -Title "Test2" -Category 'Das CMDB-Projekt'
