@@ -1339,16 +1339,13 @@ function Get-CmdbDialog {
     Get-CmdbDialog
 
     .DESCRIPTION
-    Get-CmdbCategoryInfo lets you discover all available category properties for a given category id
+    Retreive the values of a dialog+ attribute
 
     .PARAMETER Category
     This parameter takes a constant name of a specific category
 
-    .PARAMETER CatgId
-    With CatgId you can pass an id of a global category from table isysgui_catg
-
-    .PARAMETER CatsId
-    With CatsId you can pass an id of a specific catgeory from table isysgui_cats
+    .PARAMETER Property
+    This is the name of the dialog+ property you want to get the values
 
     .NOTES
     Version
@@ -1372,6 +1369,29 @@ function Get-CmdbDialog {
 }
 
 function Set-CmdbDialog {
+<#
+    .SYNOPSIS
+    Set-CmdbDialog
+
+    .DESCRIPTION
+    Change the values of a dialog+ entry
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER Property
+    This is the name of the dialog+ property you want to change the value
+
+    .PARAMETER Value
+    This is the new value 
+
+    .PARAMETER ElementId
+    This is the id of the element you want to set a new value. 
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>         
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, Position=0)]
@@ -1401,6 +1421,26 @@ function Set-CmdbDialog {
 }
 
 function New-CmdbDialog {
+<#
+    .SYNOPSIS
+    New-CmdbDialog
+
+    .DESCRIPTION
+    Creates a new value for a dialog+ property
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER Property
+    This is the name of the dialog+ property you want to add the value
+
+    .PARAMETER Value
+    This is the new value 
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>        
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, Position=0)]
@@ -1426,6 +1466,26 @@ function New-CmdbDialog {
 }
 
 function Remove-CmdbDialog {
+<#
+    .SYNOPSIS
+    Remove-CmdbDialog
+
+    .DESCRIPTION
+    Removes a value from a dialog+ property
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER Property
+    This is the name of the dialog+ property you want to remove the value
+
+    .PARAMETER ElementId
+    This is the id of the element you want remove
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>            
     [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='High')]
     Param (
         [Parameter(Mandatory=$true, Position=0)]
@@ -1451,6 +1511,21 @@ function Remove-CmdbDialog {
 }
 
 function Get-CmdbReport {
+ <#
+    .SYNOPSIS
+    Get-CmdbReport
+
+    .DESCRIPTION
+    This Cmdlet can retreive all reports or if you provide a report id also get the result of the
+    specified report
+
+    .PARAMETER Id
+    Optional parameter that, if provided executes the report with the id and shows the results
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>               
     Param(
         [Parameter(Mandatory=$false, Position=0)]
         [int]$Id
@@ -1467,6 +1542,20 @@ function Get-CmdbReport {
 }
 
 function Get-CmdbObjectTypeCategories {
+<#
+    .SYNOPSIS
+    Get-CmdbObjectTypeCategories
+
+    .DESCRIPTION
+    Calling this Cmdlet you retreive all the available Categories for this object type
+
+    .PARAMETER TypeId
+    Defines the type id you wan't to retreive the configured categories
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>              
     [cmdletbinding()]
     param (
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0)]
@@ -1524,6 +1613,17 @@ function Get-CmdbObjectsByRelation {
 }
 
 function Get-CmdbObjectTypeGroups {
+<#
+    .SYNOPSIS
+    Get-CmdbObjectTypeGroups
+
+    .DESCRIPTION
+    Calling this Cmdlet you retreive all the available object type groups configured in idoit
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>        
     Param (
         [Parameter(Mandatory=$false)]
         [int]$Limit,
