@@ -1,4 +1,4 @@
-// Available variables which can be used inside of strings.
+^// Available variables which can be used inside of strings.
 // ${workspaceRoot}: the root folder of the team
 // ${file}: the current opened file
 // ${relativeFile}: the current opened file relative to workspaceRoot
@@ -36,7 +36,11 @@
                 "Write-Host 'Invoking Pester...'; $ProgressPreference = 'SilentlyContinue'; Invoke-Pester -Script test -PesterOption @{IncludeVSCodeMarker=$true};",
                 "Invoke-Command { Write-Host 'Completed Test task in task runner.' }"
             ],
-            "problemMatcher": "$pester"
+            "problemMatcher": "$pester",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
-	]
+    ]
 }

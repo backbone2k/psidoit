@@ -1,7 +1,7 @@
 #
 # Modulmanifest für das Modul "psidoit"
 #
-# Generiert von: cbag
+# Generiert von: Christian Baumgartner
 #
 # Generiert am: 01.01.2018
 #
@@ -21,19 +21,19 @@ ModuleVersion = '0.1.0'
 GUID = 'ab55d75d-c735-4e3b-80c1-d001bb7bdd60'
 
 # Autor dieses Moduls
-Author = 'cbag'
+Author = 'Christian Baumgartner'
 
 # Unternehmen oder Hersteller dieses Moduls
-CompanyName = 'Unbekannt'
+#CompanyName = 'Unbekannt'
 
 # Urheberrechtserklärung für dieses Modul
-Copyright = '(c) 2018 cbag. Alle Rechte vorbehalten.'
+Copyright = '(c) 2018 Christian Baumgartner. Alle Rechte vorbehalten.'
 
 # Beschreibung der von diesem Modul bereitgestellten Funktionen
 # Description = ''
 
 # Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
-# PowerShellVersion = ''
+PowerShellVersion = '3.0'
 
 # Der Name des für dieses Modul erforderlichen Windows PowerShell-Hosts
 # PowerShellHostName = ''
@@ -78,7 +78,7 @@ CmdletsToExport = '*'
 VariablesToExport = '*'
 
 # Aus diesem Modul zu exportierende Aliase. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Aliase vorhanden sind.
-AliasesToExport = '*'
+#AliasesToExport = '*'
 
 # Aus diesem Modul zu exportierende DSC-Ressourcen
 # DscResourcesToExport = @()

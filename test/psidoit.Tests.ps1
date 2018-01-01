@@ -1,5 +1,22 @@
+$Verbose = @{}
+if($env:APPVEYOR_REPO_BRANCH -and $env:APPVEYOR_REPO_BRANCH -notlike "master")
+{
+    $Verbose.add("Verbose",$True)
+}
+
 $ModuleManifestName = 'psidoit.psd1'
-$ModuleManifestPath = "$PSScriptRoot\..\$ModuleManifestName"
+$ModuleManifestPath = "$PSScriptRoot\..\psidoit\$ModuleManifestName"
+
+$PSVersion = $PSVersionTable.PSVersion.Major
+Import-Module $PSScriptRoot\..\PsIdoIt -Force
+
+#Settings for connecting
+$Settings = @{
+    Username = "admin"
+    Password = "admin"
+    Uri = "https://demo.i-doit.com/src/jsonrpc.php"
+    ApiKey = "c1ia5q"
+}
 
 Describe 'Module Manifest Tests' {
     It 'Passes Test-ModuleManifest' {
@@ -7,4 +24,3 @@ Describe 'Module Manifest Tests' {
         $? | Should Be $true
     }
 }
-

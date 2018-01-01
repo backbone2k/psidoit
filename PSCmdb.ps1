@@ -4,13 +4,13 @@
 
     Version
     0.1.0     30.12.2017  CB  initial release
-#>    
+#>
     if (!$global:cmdbSession) {
         Throw "You must call the Connect-Cmdb cmdlet before calling any other cmdlets."
     }
 }
 
-function Invoke-Cmdb {
+function Invoke-Cmdb { #!Exported
 <#
     .SYNOPSIS
     Invoke-Cmdb
@@ -28,11 +28,11 @@ function Invoke-Cmdb {
     This is an optional parameter to pass specific header fields in the POST request
 
     .PARAMETER Uri
-    The Uri parameter can be used to set the connection URI. If this optional parameter is not provided Invoke-Cmdb 
+    The Uri parameter can be used to set the connection URI. If this optional parameter is not provided Invoke-Cmdb
     is looking in the $global:CmdbUri varibale.
 
     .EXAMPLE
-    PS> Invoke-Cmdb -Method "cmdb.location_tree.read" -Params @{"id"=1234} 
+    PS> Invoke-Cmdb -Method "cmdb.location_tree.read" -Params @{"id"=1234}
 
     This will invoke the metho cmdb.location_tree.read for the object 1234
 
@@ -81,7 +81,7 @@ function Invoke-Cmdb {
     if (!$PSBoundParameters.ContainsKey("Headers")) {
         $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Session" = $global:cmdbSession}
     }
-    
+
 
     #define higher tls version - otherwise tls1.0 will fail on more secure web sockets
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -98,12 +98,12 @@ function Invoke-Cmdb {
 
         #i-doit puts numbers in the JSON response in quotes :-( - This is breaking type conversion into integer when calling ConvertFrom-Json
         #Before converting the JSON to an PSObject we remove quotes from numbers with this little magic regex!
-        
-        $Regex = '(?m)"([0-9]+)"'    
+
+        $Regex = '(?m)"([0-9]+)"'
         #The regex is matching numbers between "" - (?m) defines multiple occurance
 
         $TempJson = $InvokeResult.content -replace $Regex, '$1'
-        
+
         $ContentJson = ConvertFrom-Json $TempJson
 
         #Check for error object
@@ -130,7 +130,7 @@ function Invoke-Cmdb {
 
 }
 
-function Disconnect-Cmdb {
+function Disconnect-Cmdb { #!Exported
 <#
     .SYNOPSIS
     Disconnect-Cmdb
@@ -159,7 +159,7 @@ function Disconnect-Cmdb {
 
 }
 
-function Connect-Cmdb {
+function Connect-Cmdb { #!Exported
 <#
     .SYNOPSIS
     Connect-Cmdb
@@ -178,17 +178,17 @@ function Connect-Cmdb {
 
     .PARAMETER Uri
     This is the Uri to the idoit JSON-RPC API. It is always in the format http[s]://your.i-doit.host/src/jsonrpc.php
-    
+
     .PARAMETER Settings
     This parameter will be removed - for hashtable you can use paramter splatting
 
     .PARAMETER ConfigFile
-    You can provide a path to a settings file in json format. It must containt username, password, apikey and 
+    You can provide a path to a settings file in json format. It must containt username, password, apikey and
     uri as key-value pairs
 
     .EXAMPLE
     PS> Connect-Cmdb -Username 'admin' -Password 'admin' -Uri 'https://demo.i-doit.com/src/jsonrpc.php' -ApiKey 'asdaur'
-    
+
     This will esatblish a session to demo.i-doit.com with api key asdaur for user admin
 
     .NOTES
@@ -205,8 +205,8 @@ function Connect-Cmdb {
         [String]$Password,
 
         [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=3)]
-        [string]$ApiKey, 
-    
+        [string]$ApiKey,
+
         [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=4)]
         [string]$Uri,
 
@@ -234,7 +234,7 @@ function Connect-Cmdb {
             ApiKey = $ApiKey
             Uri = $Uri
         }
-       
+
     } elseif ($PSCmdlet.ParameterSetName -eq "SetC") {
         $SettingsParams = Get-Content $ConfigFile -Raw | ConvertFrom-Json
     }
@@ -245,10 +245,10 @@ function Connect-Cmdb {
 
     $Global:CmdbApiKey = $SettingsParams.ApiKey
     $Global:CmdbUri = $SettingsParams.Uri
-    
+
     $Params = @{}
     $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Username" = $SettingsParams.Username; "X-RPC-Auth-Password" = $SettingsParams.Password}
-    
+
     $ResultObj = Invoke-Cmdb -Method "idoit.login" -Params $Params -Headers $Headers -Uri $SettingsParams.Uri
 
     $LoginResult = [pscustomobject]@{
@@ -268,11 +268,11 @@ function Connect-Cmdb {
     elseif (($CmdbVer.Major -lt 1) -or ($CmdbVer.Minor -lt 7)) {
         Throw "PSCmdb needs minimum Version 1.7 to work. You are running i-doit $($CmdbVer.Major).$($CmdbVer.Minor)"
     }
-    
+
     return $LoginResult
 }
 
-function Get-CmdbVersion {
+function Get-CmdbVersion { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbVersion
@@ -313,7 +313,7 @@ function Get-CmdbLocationTree {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>    
+#>
     [cmdletbinding()]
     param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -324,13 +324,13 @@ function Get-CmdbLocationTree {
         $Params = @{}
         $Params.Add("id", $Id)
 
-        $ResultObj = Invoke-Cmdb -Method "cmdb.location_tree.read" -Params $Params 
+        $ResultObj = Invoke-Cmdb -Method "cmdb.location_tree.read" -Params $Params
 
         return $ResultObj
     }
 }
 
-function Find-CmdbObjects {
+function Find-CmdbObjects { #!Exported
 <#
     .SYNOPSIS
     Find-CmdbObjects
@@ -390,7 +390,7 @@ function Find-CmdbObjects {
 }
 
 #region CmdbObject functions
-function Get-CmdbObject {
+function Get-CmdbObject { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbObject
@@ -402,13 +402,13 @@ function Get-CmdbObject {
     The id of the object you want to get back
 
     .EXAMPLE
-    PS> Get-CmdbObject -Id 1234 
-    
+    PS> Get-CmdbObject -Id 1234
+
     This will get the object 1234
 
     .NOTES
     Version
-    0.1.0     29.12.2017  CB  initial release    
+    0.1.0     29.12.2017  CB  initial release
 #>
     param (
         [Parameter(Mandatory = $true)]
@@ -433,43 +433,43 @@ function Get-CmdbObject {
 
     $ResultObj = Invoke-Cmdb -Method "cmdb.object.read" -Params $Params
 
-    
+
     $resultObj.PSObject.TypeNames.Insert(0,'Cmdb.Object')
     $resultObj | Add-Member MemberSet PSStandardMembers $PSStandardMembers
 
     return $ResultObj
 
 }
-function Set-CmdbObject {
+function Set-CmdbObject { #!Exported
 <#
     .SYNOPSIS
     Set-CmdbObject
 
     .DESCRIPTION
-    Set-CmdbObject lets you modify an existing objects title . 
+    Set-CmdbObject lets you modify an existing objects title .
 
     .PARAMETER Type
     This parameter either the type id of the object you want to modify.
 
     .PARAMETER Title
     Defines  the new title for the object you are modifing.
-    
+
     .EXAMPLE
     PS> Set-CmdbObject -Id 1234 -Title "srv12345.domain.de"
-    
+
     This will change the title for object 1234 to srv12345.domain.de
 
     .NOTES
     Version
-    0.1.0     29.12.2017  CB  initial release    
-#>    
+    0.1.0     29.12.2017  CB  initial release
+#>
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0)]
         [int]$Id,
 
         [Parameter(Mandatory=$true)]
-        [string]$Title    
+        [string]$Title
     )
 
     Process {
@@ -479,8 +479,8 @@ function Set-CmdbObject {
 
 
         $Params.Add("title", $title)
-        
-        If ($PSCmdlet.ShouldProcess("Updating title for object id $Id to $title")) { 
+
+        If ($PSCmdlet.ShouldProcess("Updating title for object id $Id to $title")) {
             $ResultObj = Invoke-Cmdb -Method "cmdb.object.update" -Params $Params
         }
 
@@ -490,21 +490,21 @@ function Set-CmdbObject {
     }
 
 }
-function New-CmdbObject {
+function New-CmdbObject { #!Exported
 <#
     .SYNOPSIS
     New-CmdbObject
 
     .DESCRIPTION
-    New-CmdbObject lets you create a new object. 
+    New-CmdbObject lets you create a new object.
 
     DYNAMIC PARAMETERS
     -Category <String>
-        This parameter defines the dialog category on the general category. It is a dynamic parameter 
+        This parameter defines the dialog category on the general category. It is a dynamic parameter
         that will pull the available values in real time.
 
     -Purpose <String>
-        This parameter defines the dialog purpose on the general category. It is a dynamic parameter 
+        This parameter defines the dialog purpose on the general category. It is a dynamic parameter
         that will pull the available values in real time.
 
     .PARAMETER Type
@@ -513,10 +513,10 @@ function New-CmdbObject {
     .PARAMETER Title
     This the title of the object you are creating.
 
-    
+
     .EXAMPLE
     PS> New-CmdbObject -Type 5 -Title "srv12345.domain.de" -Purpose "Production"
-    
+
     This will create a new Object of type 5 (C__OBJTYPE__SERVER) with the name srv12345.domain.de
     and the purpose "Production"
 
@@ -531,7 +531,7 @@ function New-CmdbObject {
         $Type,
 
         [Parameter(Mandatory=$true)]
-        [string]$Title        
+        [string]$Title
     )
 
     dynamicParam {
@@ -545,12 +545,12 @@ function New-CmdbObject {
         $ParameterAttribute.Mandatory = $false
 
         # Add the attributes to the attributes collection
-        $AttributeCollection.Add($ParameterAttribute) 
-        # Create the dictionary 
+        $AttributeCollection.Add($ParameterAttribute)
+        # Create the dictionary
         $RuntimeParameterDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-        # Generate and set the ValidateSet             
+        # Generate and set the ValidateSet
         $arrSet = (Get-CmdbDialog -Category "C__CATG__GLOBAL" -Property "category").title
-        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)    
+        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)
         # Add the ValidateSet to the attributes collection
         $AttributeCollection.Add($ValidateSetAttribute)
         # Create and return the dynamic parameter
@@ -565,10 +565,10 @@ function New-CmdbObject {
         $ParameterAttribute.Mandatory = $false
         #$ParameterAttribute.Position = 1
         # Add the attributes to the attributes collection
-        $AttributeCollection.Add($ParameterAttribute) 
-        # Generate and set the ValidateSet             
+        $AttributeCollection.Add($ParameterAttribute)
+        # Generate and set the ValidateSet
         $arrSet = (Get-CmdbDialog -Category "C__CATG__GLOBAL" -Property "purpose").title
-        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)    
+        $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)
         # Add the ValidateSet to the attributes collection
         $AttributeCollection.Add($ValidateSetAttribute)
         # Create and return the dynamic parameter
@@ -589,11 +589,11 @@ function New-CmdbObject {
             $PurposeElementId = (Get-CmdbDialog -Category "C__CATG__GLOBAL" -Property "purpose" | Where-Object {$_.title -eq $Purpose }).id
         }
 
-    
+
     }
 
     process {
-        
+
         $Params = @{}
         $Params.Add("type", $Type)
         $Params.Add("title", $Title)
@@ -634,13 +634,13 @@ function Remove-CmdbObject {
 
     .EXAMPLE
     PS> Remove-CmdbObject -Id 1234 -Archive
-    
+
     This will archive the object with the id 1234
 
     .NOTES
     Version
-    0.1.0     29.12.2017  CB  initial release    
-#>    
+    0.1.0     29.12.2017  CB  initial release
+#>
     [cmdletbinding(SupportsShouldProcess, ConfirmImpact='High')]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0, ParameterSetName="Default")]
@@ -671,11 +671,11 @@ function Remove-CmdbObject {
 
     }
     Process {
-        $Params = @{}  
+        $Params = @{}
         $Params.Add("id", $Id)
         if ($PSCmdlet.ParameterSetName -eq "Default") {
             $Action = "Archive"
-        } 
+        }
         else {
             $Action = $PSCmdlet.ParameterSetName
         }
@@ -696,7 +696,7 @@ function Remove-CmdbObject {
 
             return $ResultObj
         }
-        
+
     }
 }
 
@@ -712,7 +712,7 @@ function Get-CmdbObjectTypes {
     object types from idoit.
 
     .PARAMETER Id
-    If provided the result will be filtered these Ids 
+    If provided the result will be filtered these Ids
 
     .PARAMETER Title
     If provided the result will be filtered by title
@@ -722,7 +722,7 @@ function Get-CmdbObjectTypes {
 
     .PARAMETER Limit
     Limit the number results to the this value
-    
+
     .PARAMETER Sort
     You can sort the result Ascending or Descending
 
@@ -740,7 +740,7 @@ function Get-CmdbObjectTypes {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>    
+#>
     Param (
         [Parameter(Mandatory=$false)]
         [int[]]$Id,
@@ -812,7 +812,7 @@ function Get-CmdbConstants {
 
     .NOTES
     Version
-    0.1.0     30.12.2017  CB  initial release    
+    0.1.0     30.12.2017  CB  initial release
 #>
     $Params = @{}
 
@@ -1107,7 +1107,7 @@ function Set-CmdbCategory {
     With Set-CmdbCategory you can change values for a category for a given object.
 
     .PARAMETER Id
-    This parameter contains the id of the object you want to change a category 
+    This parameter contains the id of the object you want to change a category
 
     .PARAMETER Category
     This parameter takes a constant name of a specific category
@@ -1124,7 +1124,7 @@ function Set-CmdbCategory {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>    
+#>
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1170,7 +1170,7 @@ function New-CmdbCategory {
     With Net-CmdbCategory you can add a category object for a given object.
 
     .PARAMETER Id
-    This parameter contains the id of the object you want to add a category 
+    This parameter contains the id of the object you want to add a category
 
     .PARAMETER Category
     This parameter takes a constant name of a specific category
@@ -1187,7 +1187,7 @@ function New-CmdbCategory {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>        
+#>
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1233,7 +1233,7 @@ function Remove-CmdbCategory {
     With Remove-CmdbCategory you can remove a category object for a given object.
 
     .PARAMETER Id
-    This parameter contains the id of the object you want to remove a category 
+    This parameter contains the id of the object you want to remove a category
 
     .PARAMETER Category
     This parameter takes a constant name of a specific category
@@ -1245,13 +1245,13 @@ function Remove-CmdbCategory {
     With CatsId you can pass an id of a specific catgeory from table isysgui_cats
 
     .PARAMETER ElementId
-    This value is mandatory for multi value categories like CPU or hostaddress. 
+    This value is mandatory for multi value categories like CPU or hostaddress.
 
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>          
-    [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='High')]    
+#>
+    [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='High')]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0)]
         [int]$Id,
@@ -1267,12 +1267,12 @@ function Remove-CmdbCategory {
 
         [Parameter(Mandatory = $true)]
         [int]$ElementId
-               
+
     )
     $Params = @{}
 
     $Params.Add("id", $Id)
-    
+
     switch ($PSCmdlet.ParameterSetName) {
         "Category" {$Params.Add("category", $Category); break }
         "CatgId" {$Params.Add("catgID", $CatgId); break }
@@ -1309,7 +1309,7 @@ function Get-CmdbCategoryInfo {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>              
+#>
     Param (
         [Parameter(Mandatory=$true, ParameterSetName="Category")]
         [String]$Category,
@@ -1333,7 +1333,7 @@ function Get-CmdbCategoryInfo {
     return $resultObj
 }
 
-function Get-CmdbDialog {
+function Get-CmdbDialog { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbDialog
@@ -1350,7 +1350,7 @@ function Get-CmdbDialog {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>     
+#>
     Param (
         [Parameter(Mandatory=$true, Position=0)]
         [String]$Category,
@@ -1383,15 +1383,15 @@ function Set-CmdbDialog {
     This is the name of the dialog+ property you want to change the value
 
     .PARAMETER Value
-    This is the new value 
+    This is the new value
 
     .PARAMETER ElementId
-    This is the id of the element you want to set a new value. 
+    This is the id of the element you want to set a new value.
 
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>         
+#>
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, Position=0)]
@@ -1435,12 +1435,12 @@ function New-CmdbDialog {
     This is the name of the dialog+ property you want to add the value
 
     .PARAMETER Value
-    This is the new value 
+    This is the new value
 
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>        
+#>
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, Position=0)]
@@ -1485,7 +1485,7 @@ function Remove-CmdbDialog {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>            
+#>
     [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='High')]
     Param (
         [Parameter(Mandatory=$true, Position=0)]
@@ -1500,7 +1500,7 @@ function Remove-CmdbDialog {
 
     $Params = @{}
     $Params.Add("category",$Category)
-    $Params.Add("property",$Property)   
+    $Params.Add("property",$Property)
     $Params.Add("entry_id",$ElementId)
 
     if($PSCmdlet.ShouldProcess("Removing dialog entry id $ElementID for $Category - $Property")) {
@@ -1525,7 +1525,7 @@ function Get-CmdbReport {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>               
+#>
     Param(
         [Parameter(Mandatory=$false, Position=0)]
         [int]$Id
@@ -1555,7 +1555,7 @@ function Get-CmdbObjectTypeCategories {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>              
+#>
     [cmdletbinding()]
     param (
         [Parameter(Mandatory=$true, ValueFromPipeline=$true, Position=0)]
@@ -1623,7 +1623,7 @@ function Get-CmdbObjectTypeGroups {
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>        
+#>
     Param (
         [Parameter(Mandatory=$false)]
         [int]$Limit,
