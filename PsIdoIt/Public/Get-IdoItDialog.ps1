@@ -33,5 +33,11 @@ Function Get-IdoItDialog {
         $ResultObj = Invoke-IdoIt -Method "cmdb.dialog.read" -Params $Params
 
         $ResultObj = $ResultObj | Add-ObjectTypeName -TypeName 'idoit.dialog'
-        Return $ResultObj
+
+        If ( -Not ($ResultObj) ) {
+            Write-Error "Could not find category $Category or property $Property"
+        }
+        Else {
+            Return $ResultObj
+        }
     }

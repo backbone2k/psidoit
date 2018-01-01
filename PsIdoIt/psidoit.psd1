@@ -119,6 +119,7 @@ PrivateData = @{
 # Standardpräfix für Befehle, die aus diesem Modul exportiert werden. Das Standardpräfix kann mit "Import-Module -Prefix" überschrieben werden.
 # DefaultCommandPrefix = ''
 
+FormatsToProcess = 'psidoit.Format.ps1xml'
 }
 
 

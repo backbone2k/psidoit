@@ -609,7 +609,7 @@ function New-CmdbObject { #!Exported
     }
 }
 
-function Remove-CmdbObject {
+function Remove-CmdbObject { #!Exported
 <#
     .SYNOPSIS
     Remove-CmdbObject
@@ -702,7 +702,7 @@ function Remove-CmdbObject {
 
 #endregion
 
-function Get-CmdbObjectTypes {
+function Get-CmdbObjectTypes { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbObjectTypes
@@ -802,7 +802,7 @@ function Get-CmdbObjectTypes {
     return $ResultObj
 }
 
-function Get-CmdbConstants {
+function Get-CmdbConstants { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbConstants
@@ -876,7 +876,7 @@ function Get-CmdbConstants {
 
 }
 
-function Get-CmdbObjects {
+function Get-CmdbObjects { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbObjects

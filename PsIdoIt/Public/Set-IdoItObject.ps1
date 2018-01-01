@@ -40,12 +40,19 @@ Function Set-IdoItObject {
 
             $Params.Add("title", $Title)
 
-            If ($PSCmdlet.ShouldProcess("Updating title for object id $Id to $Title")) {
-                $ResultObj = Invoke-IdoIt -Method "cmdb.object.update" -Params $Params
-            }
+            If ((Get-IdoItObject -Id $Object) -ne $Null) {
 
-            If ($ResultObj.success) {
-                Return $ResultObj.message
+                If ($PSCmdlet.ShouldProcess("Updating title for object id $Id to $Title")) {
+                    $ResultObj = Invoke-IdoIt -Method "cmdb.object.update" -Params $Params
+                }
+
+                If ($ResultObj.success) {
+                    Return $ResultObj.message
+                }
+
+            }
+            Else {
+                Write-Error -Message "Could not find object id $Id."
             }
         }
 
