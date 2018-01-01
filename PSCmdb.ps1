@@ -1,11 +1,46 @@
 ﻿function checkCmdbConnection {
+<#
+    Internal function checkCmdbConnection. This function is called to check if a connection to i-doit was established before.
+
+    Version
+    0.1.0     30.12.2017  CB  initial release
+#>    
     if (!$global:cmdbSession) {
         Throw "You must call the Connect-Cmdb cmdlet before calling any other cmdlets."
     }
 }
 
 function Invoke-Cmdb {
+<#
+    .SYNOPSIS
+    Invoke-Cmdb
 
+    .DESCRIPTION
+    The Invoke-Cmdb Cmdlet will call the i-doit RPC API endpoint with the provieded query parameters.
+
+    .PARAMETER Method
+    This parameter the Method we wan't to call at the RPC endpoint
+
+    .PARAMETER Params
+    This is a hashtable with all method specific parameters to pass to the RPC endpoint
+
+    .PARAMETER Headers
+    This is an optional parameter to pass specific header fields in the POST request
+
+    .PARAMETER Uri
+    The Uri parameter can be used to set the connection URI. If this optional parameter is not provided Invoke-Cmdb 
+    is looking in the $global:CmdbUri varibale.
+
+    .EXAMPLE
+    PS> Invoke-Cmdb -Method "cmdb.location_tree.read" -Params @{"id"=1234} 
+
+    This will invoke the metho cmdb.location_tree.read for the object 1234
+
+    .NOTES
+    Version
+    0.1.0   29.12.2017  CB  initial release
+    0.2.0   31.12.2017  CB  redesign of the function to be more generic
+#>
     param (
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
@@ -96,18 +131,71 @@ function Invoke-Cmdb {
 }
 
 function Disconnect-Cmdb {
+<#
+    .SYNOPSIS
+    Disconnect-Cmdb
 
+    .DESCRIPTION
+    Disconnect-Cmdb Cmdlet destroys the session to the idoit cmdb and removes all session variables
+
+    .EXAMPLE
+    PS> Disconnect-Cmdb
+
+    This will disconnect from idoit
+
+    .NOTES
+    Version
+    0.1.0   29.12.2017  CB  initial release
+    0.2.0   01.01.2018  CB  added removal of variable CmdbUri from global scope
+#>
     $Params = @{}
 
+    #Todo Check if a session is available before destroing
     Invoke-Cmdb -Method "idoit.logout" -Params $Params
 
-    Remove-Variable -Name cmdbApiKey -Scope Global -Force:$true
-    Remove-Variable -Name cmdbSession -Scope Global -Force:$true
+    Remove-Variable -Name CmdbApiKey -Scope Global -Force:$true
+    Remove-Variable -Name CmdbSession -Scope Global -Force:$true
+    Remove-Variable -Name CmdbUri -Scope Global -Force:$true
 
 }
 
 function Connect-Cmdb {
+<#
+    .SYNOPSIS
+    Connect-Cmdb
 
+    .DESCRIPTION
+    Connect-Cmdb initalize the session to the idoit cmdb.
+
+    .PARAMETER Username
+    User with appropiate permissions to access the cmdb.
+
+    .PARAMETER Password
+    The password for the user to access the cmdb.
+
+    .PARAMETER ApiKey
+    This is the apikey you define in idoit unter Settings-> Interface-> JSON-RPC API to access the api
+
+    .PARAMETER Uri
+    This is the Uri to the idoit JSON-RPC API. It is always in the format http[s]://your.i-doit.host/src/jsonrpc.php
+    
+    .PARAMETER Settings
+    This parameter will be removed - for hashtable you can use paramter splatting
+
+    .PARAMETER ConfigFile
+    You can provide a path to a settings file in json format. It must containt username, password, apikey and 
+    uri as key-value pairs
+
+    .EXAMPLE
+    PS> Connect-Cmdb -Username 'admin' -Password 'admin' -Uri 'https://demo.i-doit.com/src/jsonrpc.php' -ApiKey 'asdaur'
+    
+    This will esatblish a session to demo.i-doit.com with api key asdaur for user admin
+
+    .NOTES
+    Version
+    0.1.0   29.12.2017  CB  initial release
+    0.2.0   31.12.2017  CB  some major redesign for the parameter sets
+#>
     [cmdletbinding()]
     param(
         [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=0)]
@@ -117,7 +205,7 @@ function Connect-Cmdb {
         [String]$Password,
 
         [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=3)]
-        [string]$ApiKey, # = "c1ia5q"
+        [string]$ApiKey, 
     
         [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=4)]
         [string]$Uri,
@@ -136,6 +224,8 @@ function Connect-Cmdb {
 
 
     )
+
+    #TODO Enforce https and provide a switch parameter to allow http only (unsecure!)
 
     if ($PSCmdlet.ParameterSetName -eq "SetA") {
         $SettingsParams = @{
@@ -183,6 +273,17 @@ function Connect-Cmdb {
 }
 
 function Get-CmdbVersion {
+<#
+    .SYNOPSIS
+    Get-CmdbVersion
+
+    .DESCRIPTION
+    Retreive the i-doit version
+
+    .NOTES
+    Version
+    0.1.0   29.12.2017  CB  initial release
+#>
     $Params = @{}
 
     checkCmdbConnection
@@ -190,6 +291,43 @@ function Get-CmdbVersion {
     $ResultObj = Invoke-Cmdb -Method "idoit.version" -Params $Params
 
     return $ResultObj | Select-Object version, type, step
+}
+
+function Get-CmdbLocationTree {
+<#
+    .SYNOPSIS
+    Get-CmdbLocationTree
+
+    .DESCRIPTION
+    With Get-CmdbLOcationTree you can define a parent object and retreive all child objects that are bound to this
+    location
+
+    .PARAMETER Id
+    This is the object id of the parent object
+
+    .EXAMPLE
+    PS> Get-CmdbLocationTree -Id 38
+
+    This will return all objects assigned to the parent object location with id 38
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>    
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
+        [int]$Id
+    )
+
+    process {
+        $Params = @{}
+        $Params.Add("id", $Id)
+
+        $ResultObj = Invoke-Cmdb -Method "cmdb.location_tree.read" -Params $Params 
+
+        return $ResultObj
+    }
 }
 
 function Find-CmdbObjects {
@@ -210,7 +348,7 @@ function Find-CmdbObjects {
 
     .NOTES
     Version
-    1.0.0     29.12.2017  CB  initial release
+    0.1.0     29.12.2017  CB  initial release
 #>
     Param (
         [Parameter(Mandatory = $true, Position=0)]
@@ -253,7 +391,25 @@ function Find-CmdbObjects {
 
 #region CmdbObject functions
 function Get-CmdbObject {
+<#
+    .SYNOPSIS
+    Get-CmdbObject
 
+    .DESCRIPTION
+    Get-CmdbObject lets you retreive an an object.
+
+    .PARAMETER Id
+    The id of the object you want to get back
+
+    .EXAMPLE
+    PS> Get-CmdbObject -Id 1234 
+    
+    This will get the object 1234
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release    
+#>
     param (
         [Parameter(Mandatory = $true)]
         [int]$Id
@@ -284,7 +440,6 @@ function Get-CmdbObject {
     return $ResultObj
 
 }
-
 function Set-CmdbObject {
 <#
     .SYNOPSIS
@@ -306,7 +461,7 @@ function Set-CmdbObject {
 
     .NOTES
     Version
-    1.0.0     29.12.2017  CB  initial release    
+    0.1.0     29.12.2017  CB  initial release    
 #>    
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
@@ -367,7 +522,7 @@ function New-CmdbObject {
 
     .NOTES
     Version
-    1.0.0     29.12.2017  CB  initial release
+    0.1.0     29.12.2017  CB  initial release
 #>
     [cmdletbinding()]
     param (
@@ -455,6 +610,37 @@ function New-CmdbObject {
 }
 
 function Remove-CmdbObject {
+<#
+    .SYNOPSIS
+    Remove-CmdbObject
+
+    .DESCRIPTION
+    With Remove-CmdbObject you can archive, delete or purge a object from i-doit
+
+    .PARAMETER Id
+    The id of the object you want to remove
+
+    .PARAMETER Archive
+    When this switch is provided, the object is archived
+
+    .PARAMETER Delete
+    When this switch is provided, the object is deleted
+
+    .PARAMETER Purge
+    When this switch is provided, the object is purged
+
+    .PARAMETER Quicpurge
+    When this switch is provided, the object is going through all states and is purged at the end.
+
+    .EXAMPLE
+    PS> Remove-CmdbObject -Id 1234 -Archive
+    
+    This will archive the object with the id 1234
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release    
+#>    
     [cmdletbinding(SupportsShouldProcess, ConfirmImpact='High')]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0, ParameterSetName="Default")]
@@ -517,6 +703,44 @@ function Remove-CmdbObject {
 #endregion
 
 function Get-CmdbObjectTypes {
+<#
+    .SYNOPSIS
+    Get-CmdbObjectTypes
+
+    .DESCRIPTION
+    Get-CmdbObjectTypes returns available object types. If you provide no parameters you will get all availabke
+    object types from idoit.
+
+    .PARAMETER Id
+    If provided the result will be filtered these Ids 
+
+    .PARAMETER Title
+    If provided the result will be filtered by title
+
+    .PARAMETER Enabled
+    Only return object types that are enabled
+
+    .PARAMETER Limit
+    Limit the number results to the this value
+    
+    .PARAMETER Sort
+    You can sort the result Ascending or Descending
+
+    .PARAMETER OrderBy
+    Define by wich attribute the result is filtered
+
+    .PARAMETER Countobjects
+    When you define this switch parameter, you will get the amount of objects per object type
+
+    .EXAMPLE
+    PS> Get-CmdbObjectTypes -Id 123,572,1349 -Enabled
+
+    This will return the object types 123, 572 and 1349 but will filter out objects if they are not enabled.
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>    
     Param (
         [Parameter(Mandatory=$false)]
         [int[]]$Id,
@@ -579,13 +803,23 @@ function Get-CmdbObjectTypes {
 }
 
 function Get-CmdbConstants {
+<#
+    .SYNOPSIS
+    Get-CmdbConstants
 
+    .DESCRIPTION
+    Get-CmdbConstants lets you retreive all available Constants in i-doit
+
+    .NOTES
+    Version
+    0.1.0     30.12.2017  CB  initial release    
+#>
     $Params = @{}
 
     $ResultObj = Invoke-Cmdb -Method "idoit.constants" -Params $Params
 
     #The result of this method is quite strange. Converting it back from json will result in 3 PSObjects
-    #with each constant a Noteproperty. So we will create a new CustomObj with properties type, const and title
+    #with each them contains a Noteproperty. So we will create a new CustomObj with properties type, const and title
     #and merge everything into this. So all the cool PowerShell features for filtering and piping are possible
 
     #First we create a template Object with the properties we need...
@@ -696,7 +930,7 @@ function Get-CmdbObjects {
 
     .NOTES
     Version
-    1.0.0     29.12.2017  CB  initial release
+    0.1.0     29.12.2017  CB  initial release
 #>
     Param (
         [Parameter(Mandatory=$false, ParameterSetName = "NonPerson", Position=0)]
@@ -781,68 +1015,6 @@ function Get-CmdbObjects {
     return $resultObj
 }
 
-function Get-CmdbServers {
-
-    $TypeId = (Get-CmdbObjectTypes | Where-Object {$_.Title -eq "Server"}).id
-
-    Get-CmdbObjects -TypeId $TypeId
-
-}
-
-function Get-CmdbCategoryAccounting {
-
-    [cmdletbinding()]
-    param (
-        [Parameter(Mandatory = $true, ValueFromPipeline)]
-        [int[]]$Id
-    )
-
-    Begin {
-        #Create an empty PSObject array to store the results
-        $resultObj = @(New-Object PSObject)
-
-        #Configure a default display set
-        $defaultDisplaySet = 'ID','objID','Account','Cost_unit'
-
-        #Create the default property display set
-        $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
-        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
-    }
-
-    Process {
-
-        foreach ($o in $Id) {
-            $resultObj += Get-CmdbCategory -Id $o -Category "C__CATG__ACCOUNTING"
-        }
-    }
-
-    End {
-
-        #Give this object a unique typename
-        $resultObj.PSObject.TypeNames.Insert(0,'Cmdb.Category.Accounting')
-        $resultObj | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-
-        return $resultObj
-    }
-}
-
-function Get-CmdbCategoryIpAddress {
-    [cmdletbinding()]
-    param (
-        [Parameter(Mandatory = $true, ValueFromPipeline)]
-        [int[]]$Id
-    )
-
-    Process {
-
-        foreach ($o in $Id) {
-            $resultObj += Get-CmdbCategory -Id $o -Category "C__CATG__IP"
-        }
-
-        $resultObj
-    }
-}
-
 function Get-CmdbCategory {
 <#
     .SYNOPSIS
@@ -875,7 +1047,7 @@ function Get-CmdbCategory {
 
     .NOTES
     Version
-    1.0.0     29.12.2017  CB  initial release
+    0.1.0     29.12.2017  CB  initial release
 #>
     [cmdletbinding()]
     Param (
@@ -927,6 +1099,32 @@ function Get-CmdbCategory {
 }
 
 function Set-CmdbCategory {
+<#
+    .SYNOPSIS
+    Set-CmdbCategory
+
+    .DESCRIPTION
+    With Set-CmdbCategory you can change values for a category for a given object.
+
+    .PARAMETER Id
+    This parameter contains the id of the object you want to change a category 
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER CatgId
+    With CatgId you can pass an id of a global category from table isysgui_catg
+
+    .PARAMETER CatsId
+    With CatsId you can pass an id of a specific catgeory from table isysgui_cats
+
+    .PARAMETER Data
+    The data parameter takes a hashtable with all the key-value pairs of the category you want to change.
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>    
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -964,6 +1162,32 @@ function Set-CmdbCategory {
 }
 
 function New-CmdbCategory {
+<#
+    .SYNOPSIS
+    New-CmdbCategory
+
+    .DESCRIPTION
+    With Net-CmdbCategory you can add a category object for a given object.
+
+    .PARAMETER Id
+    This parameter contains the id of the object you want to add a category 
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER CatgId
+    With CatgId you can pass an id of a global category from table isysgui_catg
+
+    .PARAMETER CatsId
+    With CatsId you can pass an id of a specific catgeory from table isysgui_cats
+
+    .PARAMETER Data
+    The data parameter takes a hashtable with all the key-value pairs of the category you want to add
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>        
     [cmdletbinding(SupportsShouldProcess=$true)]
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1001,6 +1225,32 @@ function New-CmdbCategory {
 }
 
 function Remove-CmdbCategory {
+<#
+    .SYNOPSIS
+    Remove-CmdbCategory
+
+    .DESCRIPTION
+    With Remove-CmdbCategory you can remove a category object for a given object.
+
+    .PARAMETER Id
+    This parameter contains the id of the object you want to remove a category 
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER CatgId
+    With CatgId you can pass an id of a global category from table isysgui_catg
+
+    .PARAMETER CatsId
+    With CatsId you can pass an id of a specific catgeory from table isysgui_cats
+
+    .PARAMETER ElementId
+    This value is mandatory for multi value categories like CPU or hostaddress. 
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>          
     [cmdletbinding(SupportsShouldProcess=$true, ConfirmImpact='High')]    
     Param (
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName, Position=0)]
@@ -1040,6 +1290,26 @@ function Remove-CmdbCategory {
 }
 
 function Get-CmdbCategoryInfo {
+<#
+    .SYNOPSIS
+    Get-CmdbCategoryInfo
+
+    .DESCRIPTION
+    Get-CmdbCategoryInfo lets you discover all available category properties for a given category id
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER CatgId
+    With CatgId you can pass an id of a global category from table isysgui_catg
+
+    .PARAMETER CatsId
+    With CatsId you can pass an id of a specific catgeory from table isysgui_cats
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>              
     Param (
         [Parameter(Mandatory=$true, ParameterSetName="Category")]
         [String]$Category,
@@ -1064,6 +1334,26 @@ function Get-CmdbCategoryInfo {
 }
 
 function Get-CmdbDialog {
+<#
+    .SYNOPSIS
+    Get-CmdbDialog
+
+    .DESCRIPTION
+    Get-CmdbCategoryInfo lets you discover all available category properties for a given category id
+
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
+
+    .PARAMETER CatgId
+    With CatgId you can pass an id of a global category from table isysgui_catg
+
+    .PARAMETER CatsId
+    With CatsId you can pass an id of a specific catgeory from table isysgui_cats
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
+#>     
     Param (
         [Parameter(Mandatory=$true, Position=0)]
         [String]$Category,
@@ -1208,6 +1498,31 @@ function Get-CmdbObjectTypeCategories {
     }
 }
 
+function Get-CmdbObjectsByRelation {
+    #TODO This function is not working yet
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true, Position=0)]
+        [int]$Id,
+
+        [Parameter(Mandatory=$false, Position=1)]
+        $RelType
+    )
+
+    process {
+        $Params = @{}
+        $Params.Add("id", $Id)
+
+        if($PSBoundParameters.ContainsKey("RelType")) {
+            $Params.Add("relation_type", $RelType)
+        }
+
+        $ResultObj = Invoke-Cmdb -Method "cmdb.objects_by_relation.read" -Params $Params
+
+        return $ResultObj
+    }
+}
+
 function Get-CmdbObjectTypeGroups {
     Param (
         [Parameter(Mandatory=$false)]
@@ -1300,6 +1615,69 @@ function measure-cmdbQuality-xx {
     }
 
 }
+
+function Get-CmdbServers {
+
+    $TypeId = (Get-CmdbObjectTypes | Where-Object {$_.Title -eq "Server"}).id
+
+    Get-CmdbObjects -TypeId $TypeId
+
+}
+
+function Get-CmdbCategoryAccounting {
+
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline)]
+        [int[]]$Id
+    )
+
+    Begin {
+        #Create an empty PSObject array to store the results
+        $resultObj = @(New-Object PSObject)
+
+        #Configure a default display set
+        $defaultDisplaySet = 'ID','objID','Account','Cost_unit'
+
+        #Create the default property display set
+        $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    }
+
+    Process {
+
+        foreach ($o in $Id) {
+            $resultObj += Get-CmdbCategory -Id $o -Category "C__CATG__ACCOUNTING"
+        }
+    }
+
+    End {
+
+        #Give this object a unique typename
+        $resultObj.PSObject.TypeNames.Insert(0,'Cmdb.Category.Accounting')
+        $resultObj | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+
+        return $resultObj
+    }
+}
+
+function Get-CmdbCategoryIpAddress {
+    [cmdletbinding()]
+    param (
+        [Parameter(Mandatory = $true, ValueFromPipeline)]
+        [int[]]$Id
+    )
+
+    Process {
+
+        foreach ($o in $Id) {
+            $resultObj += Get-CmdbCategory -Id $o -Category "C__CATG__IP"
+        }
+
+        $resultObj
+    }
+}
+
 
 #Find-CmdbObjects "Web App"
 
