@@ -40,7 +40,7 @@ Function Set-IdoItObject {
 
             $Params.Add("title", $Title)
 
-            If ((Get-IdoItObject -Id $Object) -ne $Null) {
+            If (Get-IdoItObject -Id $Object) {
 
                 If ($PSCmdlet.ShouldProcess("Updating title for object id $Id to $Title")) {
                     $ResultObj = Invoke-IdoIt -Method "cmdb.object.update" -Params $Params

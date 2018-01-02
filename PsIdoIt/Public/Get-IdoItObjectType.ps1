@@ -1,10 +1,10 @@
-Function Get-IdoItObjectTypes {
+Function Get-IdoItObjectType {
     <#
     .SYNOPSIS
-    Get-IdoItObjectTypes
+    Get-IdoItObjectType
 
     .DESCRIPTION
-    Get-IdoItObjectTypes returns available object types. If you provide no parameters you will get all availabke
+    Get-IdoItObjectType returns available object types. If you provide no parameters you will get all availabke
     object types from idoit.
 
     .PARAMETER Id
@@ -29,7 +29,7 @@ Function Get-IdoItObjectTypes {
     When you define this switch parameter, you will get the amount of objects per object type
 
     .EXAMPLE
-    PS> Get-IdoItObjectTypes -Id 123,572,1349 -Enabled
+    PS> Get-IdoItObjectType -Id 123,572,1349 -Enabled
 
     This will return the object types 123, 572 and 1349 but will filter out objects if they are not enabled.
 

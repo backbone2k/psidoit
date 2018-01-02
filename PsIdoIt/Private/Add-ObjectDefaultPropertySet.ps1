@@ -1,4 +1,4 @@
-Function Set-ObjectDefaultPropertySet {
+Function Add-ObjectDefaultPropertySet {
     [CmdletBinding()]
     Param (
         [Parameter( Mandatory=$True,

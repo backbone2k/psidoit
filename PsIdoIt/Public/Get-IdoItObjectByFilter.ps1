@@ -1,10 +1,10 @@
-Function Get-IdoItObjects {
+Function Get-IdoItObjectByFilter {
     <#
         .SYNOPSIS
-        Get-IdoItObjects
+        Get-IdoItObjectByFilter
 
         .DESCRIPTION
-        With Get-IdoItObjects you can get one or more objects from i-doit cmdb that can be filtered by type, name, sys-id etc.
+        With Get-IdoItObjectByFilter you can get one or more objects from i-doit cmdb that can be filtered by type, name, sys-id etc.
 
         .PARAMETER Id
         Set this parameter to filter objects by an array of object ids
@@ -41,12 +41,12 @@ Function Get-IdoItObjects {
         "Id","TypeID","Title","TypeTitle","SysId","FirstName","LastName","Email"
 
         .EXAMPLE
-        PS> Get-IdoItObjects -Title "web%" -Sort -OrderBy SysId
+        PS> Get-IdoItObjectByFilter -Title "web%" -Sort -OrderBy SysId
 
         This will get all objects that begin with web in the title. The result is sorted by sysid
 
         .EXAMPLE
-        PS> Get-IdoItObjects -Email "john.doe@acme.com"
+        PS> Get-IdoItObjectByFilter -Email "john.doe@acme.com"
 
         In this example you will get all perons with the email address <john.doe@acme.com>
 

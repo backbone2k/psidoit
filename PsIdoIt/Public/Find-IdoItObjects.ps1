@@ -1,16 +1,16 @@
-Function Find-IdoItObjects {
+Function Find-IdoItObject {
     <#
         .SYNOPSIS
-        With Find-IdoItObjects you can trigger a global search over the i-doit API.
+        With Find-IdoItObject you can trigger a global search over the i-doit API.
 
         .DESCRIPTION
-        With Find-IdoItObjects you can trigger a global search over the i-doit API.
+        With Find-IdoItObject you can trigger a global search over the i-doit API.
 
         .PARAMETER Query
         This parameter defines the query to search for.
 
         .EXAMPLE
-        PS> Find-IdoItObjects -Query "server"
+        PS> Find-IdoItObject -Query "server"
 
         This command will return all objects that have "server" in their name.
 

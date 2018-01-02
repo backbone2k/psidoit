@@ -1,10 +1,10 @@
-Function Get-IdoItConstants {
+Function Get-IdoItConstant {
     <#
         .SYNOPSIS
-        Get-IdoItConstants
+        Get-IdoItConstant
 
         .DESCRIPTION
-        Get-IdoItConstants lets you retreive all available Constants in i-doit
+        Get-IdoItConstant lets you retreive all available Constants in i-doit
 
         .NOTES
         Version

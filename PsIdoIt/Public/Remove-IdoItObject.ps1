@@ -84,7 +84,7 @@ Function Remove-IdoItObject {
                 }
 
                 #Check if the object we want to modify exists. If not we get a nasty SQL error back from idoit
-                If ((Get-IdoItObject -Id $Object) -ne $Null) {
+                If (Get-IdoItObject -Id $Object) {
 
                     If ($PSCmdlet.ShouldProcess("Action: $Action object $Object")) {
                         $ResultObj = Invoke-IdoIt -Method $Method -Params $Params

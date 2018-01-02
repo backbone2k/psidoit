@@ -1015,7 +1015,7 @@ function Get-CmdbObjects { #!Exported
     return $resultObj
 }
 
-function Get-CmdbCategory {
+function Get-CmdbCategory { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbCategory
@@ -1289,7 +1289,7 @@ function Remove-CmdbCategory {
     }
 }
 
-function Get-CmdbCategoryInfo {
+function Get-CmdbCategoryInfo { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbCategoryInfo
@@ -1510,7 +1510,7 @@ function Remove-CmdbDialog {
     }
 }
 
-function Get-CmdbReport {
+function Get-CmdbReport { #!Exported
  <#
     .SYNOPSIS
     Get-CmdbReport

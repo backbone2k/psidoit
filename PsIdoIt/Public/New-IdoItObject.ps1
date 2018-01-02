@@ -32,14 +32,14 @@ function New-IdoItObject {
         Version
         0.1.0     29.12.2017  CB  initial release
     #>
-        [CmdletBinding()]
+        [CmdletBinding(SupportsShouldProcess = $True)]
         Param (
-            [Parameter( Mandatory=$True,
-                        Position=0 )]
+            [Parameter( Mandatory = $True,
+                        Position = 0 )]
             [Alias("TypeId")]
             $Type,
 
-            [Parameter( Mandatory=$True )]
+            [Parameter( Mandatory = $True )]
             [string]$Title
         )
 
@@ -115,14 +115,17 @@ function New-IdoItObject {
             If ($Purpose) {
                 $Params.Add("purpose", $PurposeElementId)
             }
-            $ResultObj = Invoke-IdoIt -Method "cmdb.object.create" -Params $Params
+            If ($PSCmdlet.ShouldProcess("Creating new object $Title of type $Type")) {
+                $ResultObj = Invoke-IdoIt -Method "cmdb.object.create" -Params $Params
 
-            If ($ResultObj.Success -eq $True) {
-                $ResultNewObj = Get-IdoItObject -Id $ResultObj.id
-                Return $ResultNewObj
-            }
-            Else {
-                Return $ResultObj
+
+                If ($ResultObj.Success -eq $True) {
+                    $ResultNewObj = Get-IdoItObject -Id $ResultObj.id
+                    Return $ResultNewObj
+                }
+                Else {
+                    Return $ResultObj
+                }
             }
         }
     }

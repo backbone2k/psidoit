@@ -36,7 +36,9 @@ function Connect-IdoIt {
     0.2.0   31.12.2017  CB  some major redesign for the parameter sets
     0.3.0   02.01.2018  CB  Using Credential object instead of username & password (https://github.com/PowerShell/PSScriptAnalyzer/issues/363)
 #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
     [Cmdletbinding()]
+
     Param(
         [Parameter( Mandatory=$True, ParameterSetName="SetA" )]
         [System.Management.Automation.PSCredential]
@@ -87,8 +89,9 @@ function Connect-IdoIt {
         $SettingsParams = $Settings
     }
 
-    $Global:CmdbApiKey = $SettingsParams.ApiKey
-    $Global:CmdbUri = $SettingsParams.Uri
+    New-Variable -Name CmdbApiKey -Scope Global -Value $SettingsParams.ApiKey -Force:$True
+    New-Variable -Name CmdbUri -Scope Global -Value $SettingsParams.Uri -Force:$True
+
 
     $Params = @{}
     $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Username" = $SettingsParams.Username; "X-RPC-Auth-Password" = $SettingsParams.Password}
@@ -101,7 +104,7 @@ function Connect-IdoIt {
         TenantId = $ResultObj.'client-id'
     }
 
-    $Global:cmdbSession = $ResultObj.'session-id'
+    New-Variable -Name CmdbSession -Scope Global -Value $ResultObj.'session-id' -Force:$True
 
     #Before we begin, we check that we are running against correct version. Also we know that everything
     #is working.
@@ -116,6 +119,4 @@ function Connect-IdoIt {
     Return $LoginResult
 }
 
-Connect-IdoIt -ConfigFile ..\settings.json
-
-#$SEcureString = (Get-Credential -UserName admin -Message "a").Password | ConvertFrom-SecureString
+#Connect-IdoIt -ConfigFile ..\settings.json

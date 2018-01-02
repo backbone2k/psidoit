@@ -29,6 +29,7 @@ function Invoke-IdoIt {
         0.1.0   29.12.2017  CB  initial release
         0.2.0   31.12.2017  CB  redesign of the function to be more generic
     #>
+        [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
         param (
             [Parameter(Mandatory=$true)]
             [ValidateNotNullOrEmpty()]
@@ -95,8 +96,8 @@ function Invoke-IdoIt {
             $ContentJson = ConvertFrom-Json $TempJson
 
             #Check for error object
-            if ($ContentJson.error -ne $null) {
-                Throw "Error code $($ContentJson.error.code) - $($ContentJson.error.data.error)"
+            if ($ContentJson.PSObject.Properties.Name -Contains 'Error') {
+                Throw "Error code $($ContentJson.Error.Code) - $($ContentJson.error.data.error)"
 
             }
 
