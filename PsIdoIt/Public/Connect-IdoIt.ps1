@@ -34,14 +34,14 @@ function Connect-IdoIt {
     Version
     0.1.0   29.12.2017  CB  initial release
     0.2.0   31.12.2017  CB  some major redesign for the parameter sets
+    0.3.0   02.01.2018  CB  Using Credential object instead of username & password (https://github.com/PowerShell/PSScriptAnalyzer/issues/363)
 #>
     [Cmdletbinding()]
     Param(
-        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=0)]
-        $Username,
-
-        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=1)]
-        [String]$Password,
+        [Parameter( Mandatory=$True, ParameterSetName="SetA" )]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
 
         [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=3)]
         [string]$ApiKey,
@@ -68,14 +68,19 @@ function Connect-IdoIt {
 
     if ($PSCmdlet.ParameterSetName -eq "SetA") {
         $SettingsParams = @{
-            Username = $Username
-            Password = $Password
+            Username = $Credential.Username
+            Password = $Credential.GetNetworkCredential().Password #$Credential.Password
             ApiKey = $ApiKey
             Uri = $Uri
         }
 
     } ElseIf ($PSCmdlet.ParameterSetName -eq "SetC") {
         $SettingsParams = Get-Content $ConfigFile -Raw | ConvertFrom-Json
+        $SecurePassword = ConvertTo-SecureString $SettingsParams.Password
+        $Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $SettingsParams.Username, $SecurePassword
+
+        $SettingsParams.Password = $Credential.GetNetworkCredential().Password
+
     }
 
     Else {
@@ -110,3 +115,7 @@ function Connect-IdoIt {
 
     Return $LoginResult
 }
+
+Connect-IdoIt -ConfigFile ..\settings.json
+
+#$SEcureString = (Get-Credential -UserName admin -Message "a").Password | ConvertFrom-SecureString
