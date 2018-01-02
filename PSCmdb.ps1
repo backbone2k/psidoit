@@ -293,7 +293,7 @@ function Get-CmdbVersion { #!Exported
     return $ResultObj | Select-Object version, type, step
 }
 
-function Get-CmdbLocationTree {
+function Get-CmdbLocationTree { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbLocationTree
@@ -1098,7 +1098,7 @@ function Get-CmdbCategory { #!Exported
     }
 }
 
-function Set-CmdbCategory {
+function Set-CmdbCategory { #!Exported
 <#
     .SYNOPSIS
     Set-CmdbCategory

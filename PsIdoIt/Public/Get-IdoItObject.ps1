@@ -33,7 +33,7 @@ function Get-IdoItObject {
         $ResultObj = Invoke-IdoIt -Method "cmdb.object.read" -Params $Params
 
         $ResultObj = $ResultObj | Add-ObjectTypeName -TypeName 'Idoit.Object'
-        $ResultObj = $ResultObj | Set-ObjectDefaultPropertySet -DefaultProperties 'Id', 'SysId', 'Title', 'Type_Title'
+        $ResultObj = $ResultObj | Add-ObjectDefaultPropertySet -DefaultProperties 'Id', 'SysId', 'Title', 'Type_Title'
 
         Return $ResultObj
 

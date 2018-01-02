@@ -43,7 +43,7 @@ Function Find-IdoItObject {
         }
 
         $ResultObj = $ResultObj | Add-ObjectTypeName -TypeName 'Idoit.Object.SearchResult'
-        $ResultObj = $ResultObj | Set-ObjectDefaultPropertySet -DefaultProperties 'Id','Title','Link','Score'
+        $ResultObj = $ResultObj | Add-ObjectDefaultPropertySet -DefaultProperties 'Id','Title','Link','Score'
 
         Return $ResultObj
 
