@@ -24,3 +24,9 @@ Describe 'Module Manifest Tests' {
         $? | Should Be $true
     }
 }
+
+Describe 'Test-IdoitHttpSSL tests' {
+    It 'Test https' {
+        Test-IdoitHttpSSL -Uri "https://some.domain.de/somePath" | Should Be $True
+    }
+}

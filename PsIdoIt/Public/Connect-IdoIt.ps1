@@ -25,6 +25,14 @@ function Connect-IdoIt {
     You can provide a path to a settings file in json format. It must containt username, password, apikey and
     uri as key-value pairs
 
+    .PARAMETER RawOutput
+    You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.
+
+    You have to put the parameter in parantheses like this:
+    -RawOutput ([Ref]$Output)
+
+    The return value is a Microsoft.PowerShell.Commands.HtmlWebResponseObject
+
     .EXAMPLE
     PS> Connect-Cmdb -Username 'admin' -Password 'admin' -Uri 'https://demo.i-doit.com/src/jsonrpc.php' -ApiKey 'asdaur'
 
@@ -35,38 +43,66 @@ function Connect-IdoIt {
     0.1.0   29.12.2017  CB  initial release
     0.2.0   31.12.2017  CB  some major redesign for the parameter sets
     0.3.0   02.01.2018  CB  Using Credential object instead of username & password (https://github.com/PowerShell/PSScriptAnalyzer/issues/363)
+    0.3.1   03.01.2018  CB  Added Verbose/Debug output, ParameterSplatting to the Invoke and RawOuput
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
     [Cmdletbinding()]
 
     Param(
-        [Parameter( Mandatory=$True, ParameterSetName="SetA" )]
+        [Parameter (
+            Mandatory = $True,
+            ParameterSetName = "SetA"
+        )]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=3)]
-        [string]$ApiKey,
+        [Parameter (
+            Mandatory = $True,
+            ParameterSetName = "SetA",
+            Position = 3
+        )]
+        [String]$ApiKey,
 
-        [Parameter(Mandatory=$true, ParameterSetName="SetA", Position=4)]
-        [string]$Uri,
+        [Parameter (
+            Mandatory = $True,
+            ParameterSetName = "SetA",
+            Position = 4
+        )]
+        [String]$Uri,
 
-        [Parameter(Mandatory=$true, ParameterSetName="SetB", Position=0)]
-        [ValidateScript({
+        [Parameter (
+            Mandatory = $True,
+            ParameterSetName = "SetB",
+            Position = 0
+        )]
+        [ValidateScript ({
             $RequiredKeys= @("Username","Password","ApiKey","Uri")
             $ProvidedKeys = @($_.Keys)
-            -not @($RequiredKeys| Where-Object {$ProvidedKeys -notcontains $_}).Count
+            -Not @($RequiredKeys| Where-Object {$ProvidedKeys -notcontains $_}).Count
         })]
         [Hashtable]$Settings,
 
-        [Parameter(Mandatory=$true, ParameterSetName="SetC", Position=0)]
+        [Parameter (
+            Mandatory = $True,
+            ParameterSetName = "SetC",
+            Position = 0
+        )]
         [ValidateNotNullOrEmpty()]
-        [String]$ConfigFile
+        [String]$ConfigFile,
+
+        [Parameter (
+            Mandatory = $False
+        )]
+        [Ref]$RawOutput,
+
+        [Parameter (
+            Mandatory = $False
+        )]
+        [Switch]$NoTls
 
 
     )
-
-    #TODO Enforce https and provide a switch parameter to allow http only (unsecure!)
 
     if ($PSCmdlet.ParameterSetName -eq "SetA") {
         $SettingsParams = @{
@@ -89,6 +125,12 @@ function Connect-IdoIt {
         $SettingsParams = $Settings
     }
 
+    #Test the uri uses https because we are sending credentials
+    If ( ( -Not (Test-IdoItHttps -Uri $SettingsParams.Uri)) -And (-Not ($NoTls))) {
+        Throw "Please use https or provide -NoTls paramter to lower security"
+    }
+
+
     New-Variable -Name CmdbApiKey -Scope Global -Value $SettingsParams.ApiKey -Force:$True
     New-Variable -Name CmdbUri -Scope Global -Value $SettingsParams.Uri -Force:$True
 
@@ -96,7 +138,19 @@ function Connect-IdoIt {
     $Params = @{}
     $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Username" = $SettingsParams.Username; "X-RPC-Auth-Password" = $SettingsParams.Password}
 
-    $ResultObj = Invoke-IdoIt -Method "idoit.login" -Params $Params -Headers $Headers -Uri $SettingsParams.Uri
+    $SplattingParameter = @{
+        Method = "idoit.login"
+        Params = $Params
+        Headers = $Headers
+        Uri = $SettingsParams.Uri
+    }
+
+    If ($PSBoundParameters.ContainsKey("RawOutput")) {
+        $SplattingParameter.Add("RawOutput", $RawOutput)
+    }
+
+    $ResultObj = Invoke-IdoIt @SplattingParameter
+
 
     $LoginResult = [pscustomobject]@{
         Account  = $ResultObj.name
@@ -119,4 +173,3 @@ function Connect-IdoIt {
     Return $LoginResult
 }
 
-#Connect-IdoIt -ConfigFile ..\settings.json
