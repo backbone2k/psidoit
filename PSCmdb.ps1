@@ -1161,7 +1161,7 @@ function Set-CmdbCategory { #!Exported
     }
 }
 
-function New-CmdbCategory {
+function New-CmdbCategory { #!Exported
 <#
     .SYNOPSIS
     New-CmdbCategory
@@ -1224,7 +1224,7 @@ function New-CmdbCategory {
     }
 }
 
-function Remove-CmdbCategory {
+function Remove-CmdbCategory { #!Exported
 <#
     .SYNOPSIS
     Remove-CmdbCategory
@@ -1368,7 +1368,7 @@ function Get-CmdbDialog { #!Exported
     return $ResultObj
 }
 
-function Set-CmdbDialog {
+function Set-CmdbDialog { #!Exported
 <#
     .SYNOPSIS
     Set-CmdbDialog
@@ -1420,7 +1420,7 @@ function Set-CmdbDialog {
     }
 }
 
-function New-CmdbDialog {
+function New-CmdbDialog { #!Exported
 <#
     .SYNOPSIS
     New-CmdbDialog
@@ -1465,7 +1465,7 @@ function New-CmdbDialog {
     }
 }
 
-function Remove-CmdbDialog {
+function Remove-CmdbDialog { #!Exported
 <#
     .SYNOPSIS
     Remove-CmdbDialog
@@ -1541,7 +1541,7 @@ function Get-CmdbReport { #!Exported
     return $ResultObj
 }
 
-function Get-CmdbObjectTypeCategories {
+function Get-CmdbObjectTypeCategories { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbObjectTypeCategories
@@ -1587,7 +1587,7 @@ function Get-CmdbObjectTypeCategories {
     }
 }
 
-function Get-CmdbObjectsByRelation {
+function Get-CmdbObjectsByRelation { #!Exported
     #TODO This function is not working yet
     [cmdletbinding()]
     param (
@@ -1612,7 +1612,7 @@ function Get-CmdbObjectsByRelation {
     }
 }
 
-function Get-CmdbObjectTypeGroups {
+function Get-CmdbObjectTypeGroups { #!Exported
 <#
     .SYNOPSIS
     Get-CmdbObjectTypeGroups
