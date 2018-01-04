@@ -89,7 +89,7 @@ Function Invoke-IdoIt {
         $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Session" = $global:cmdbSession}
     }
 
-    Write-Verbose "Request headers: $Headers"
+    Write-Verbose "Request headers: $($Headers | Out-String)"
 
     #define higher tls version - otherwise tls1.0 will fail on more secure web sockets
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -113,16 +113,17 @@ Function Invoke-IdoIt {
 
     If ($InvokeResult.StatusCode -eq 200) {
 
-        Write-Verbose "Request status code 200 returnd"
+        Write-Verbose "Request status code 200 returned"
         #i-doit puts numbers in the JSON response in quotes :-( - This is breaking type conversion into integer when calling ConvertFrom-Json
         #Before converting the JSON to an PSObject we remove quotes from numbers with this little magic regex!
 
-        $Regex = '(?m)"([0-9]+)"'
-        #The regex is matching numbers between "" - (?m) defines multiple occurance
+        $ContentJson = $InvokeResult.Content | ConvertFrom-IdoItJsonResponse | ConvertFrom-Json
 
-        $TempJson = $InvokeResult.content -replace $Regex, '$1'
+        Write-Verbose "Response: $ContentJson"
+        Write-Verbose "Response: $($ContentJson.Result)"
+        #$TempJson = $InvokeResult.content -replace $Regex, '$1'
 
-        $ContentJson = ConvertFrom-Json $TempJson
+        #$ContentJson = ConvertFrom-Json $TempJson
 
         #Check for error object
         Write-Verbose "Checking if response contains error object"
@@ -138,7 +139,8 @@ Function Invoke-IdoIt {
             Write-Verbose "Checking if the response id matches the request id"
 
             #We check that we get back our requestId. This ensures that the send JSON request could be read by the service
-            If ($ContentJson.id -ne $RequestID) {
+            If ( -Not (Compare-IdoItRequestId -RequestId $RequestId -ResponseId $ContentJson.id)) {
+            #If ($ContentJson.id -ne $RequestID) {
 
                 Throw "Request id mismatch. Expected value was $RequestID but it is $($ContentJson.id)"
 

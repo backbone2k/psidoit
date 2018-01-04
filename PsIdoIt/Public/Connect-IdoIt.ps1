@@ -126,7 +126,7 @@ function Connect-IdoIt {
     }
 
     #Test the uri uses https because we are sending credentials
-    If ( ( -Not (Test-IdoItHttps -Uri $SettingsParams.Uri)) -And (-Not ($NoTls))) {
+    If ( ( -Not (Test-IdoitHttpSSL -Uri $SettingsParams.Uri)) -And (-Not ($NoTls))) {
         Throw "Please use https or provide -NoTls paramter to lower security"
     }
 
