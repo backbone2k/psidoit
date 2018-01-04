@@ -18,7 +18,7 @@ else
     Try
     {
         # This is where the module manifest lives
-        $manifestPath = '.\PsIdoT\psidoit.psd1'
+        $manifestPath = '.\PsIdoIt\psidoit.psd1'
 
         # Start by importing the manifest to determine the version, then add 1 to the revision
         $manifest = Test-ModuleManifest -Path $manifestPath
