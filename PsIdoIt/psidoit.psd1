@@ -1,20 +1,20 @@
 #
-# Modulmanifest für das Modul "psidoit"
+# Modulmanifest f�r das Modul "PSGet_psidoit"
 #
 # Generiert von: Christian Baumgartner
 #
-# Generiert am: 01.01.2018
+# Generiert am: 04.01.2018
 #
 
 @{
 
-# Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
-RootModule = 'psidoit.psm1'
+# Die diesem Manifest zugeordnete Skript- oder Bin�rmoduldatei.
+RootModule = 'PsIdoIt.psm1'
 
 # Die Versionsnummer dieses Moduls
 ModuleVersion = '0.1.0.0'
 
-# Unterstützte PSEditions
+# Unterst�tzte PSEditions
 # CompatiblePSEditions = @()
 
 # ID zur eindeutigen Kennzeichnung dieses Moduls
@@ -24,61 +24,69 @@ GUID = 'ab55d75d-c735-4e3b-80c1-d001bb7bdd60'
 Author = 'Christian Baumgartner'
 
 # Unternehmen oder Hersteller dieses Moduls
-#CompanyName = 'Unbekannt'
+CompanyName = 'Unbekannt'
 
-# Urheberrechtserklärung für dieses Modul
+# Urheberrechtserkl�rung f�r dieses Modul
 Copyright = '(c) 2018 Christian Baumgartner. Alle Rechte vorbehalten.'
 
 # Beschreibung der von diesem Modul bereitgestellten Funktionen
 # Description = ''
 
-# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
+# Die f�r dieses Modul mindestens erforderliche Version des Windows PowerShell-Moduls
 PowerShellVersion = '3.0'
 
-# Der Name des für dieses Modul erforderlichen Windows PowerShell-Hosts
+# Der Name des f�r dieses Modul erforderlichen Windows PowerShell-Hosts
 # PowerShellHostName = ''
 
-# Die für dieses Modul mindestens erforderliche Version des Windows PowerShell-Hosts
+# Die f�r dieses Modul mindestens erforderliche Version des Windows PowerShell-Hosts
 # PowerShellHostVersion = ''
 
-# Die für dieses Modul mindestens erforderliche Microsoft .NET Framework-Version. Diese erforderliche Komponente ist nur für die PowerShell Desktop-Edition gültig.
+# Die f�r dieses Modul mindestens erforderliche Microsoft .NET Framework-Version. Diese erforderliche Komponente ist nur f�r die PowerShell Desktop-Edition g�ltig.
 # DotNetFrameworkVersion = ''
 
-# Die für dieses Modul mindestens erforderliche Version der CLR (Common Language Runtime). Diese erforderliche Komponente ist nur für die PowerShell Desktop-Edition gültig.
+# Die f�r dieses Modul mindestens erforderliche Version der CLR (Common Language Runtime). Diese erforderliche Komponente ist nur f�r die PowerShell Desktop-Edition g�ltig.
 # CLRVersion = ''
 
-# Die für dieses Modul erforderliche Prozessorarchitektur ("Keine", "X86", "Amd64").
+# Die f�r dieses Modul erforderliche Prozessorarchitektur ("Keine", "X86", "Amd64").
 # ProcessorArchitecture = ''
 
-# Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden müssen
+# Die Module, die vor dem Importieren dieses Moduls in die globale Umgebung geladen werden m�ssen
 # RequiredModules = @()
 
-# Die Assemblys, die vor dem Importieren dieses Moduls geladen werden müssen
+# Die Assemblys, die vor dem Importieren dieses Moduls geladen werden m�ssen
 # RequiredAssemblies = @()
 
-# Die Skriptdateien (PS1-Dateien), die vor dem Importieren dieses Moduls in der Umgebung des Aufrufers ausgeführt werden.
+# Die Skriptdateien (PS1-Dateien), die vor dem Importieren dieses Moduls in der Umgebung des Aufrufers ausgef�hrt werden.
 # ScriptsToProcess = @()
 
 # Die Typdateien (.ps1xml), die beim Importieren dieses Moduls geladen werden sollen
 # TypesToProcess = @()
 
 # Die Formatdateien (.ps1xml), die beim Importieren dieses Moduls geladen werden sollen
-# FormatsToProcess = @()
+FormatsToProcess = 'psidoit.Format.ps1xml'
 
 # Die Module, die als geschachtelte Module des in "RootModule/ModuleToProcess" angegebenen Moduls importiert werden sollen.
 # NestedModules = @()
 
-# Aus diesem Modul zu exportierende Funktionen. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Funktionen vorhanden sind.
-FunctionsToExport = '*'
+# Aus diesem Modul zu exportierende Funktionen. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und l�schen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Funktionen vorhanden sind.
+FunctionsToExport = @('Add-IdoItCategory', 'Add-IdoItDialog', 'Connect-IdoIt',
+               'Disconnect-IdoIt', 'Find-IdoItObjects', 'Get-IdoItCategory',
+               'Get-IdoItCategoryInfo', 'Get-IdoItConstant', 'Get-IdoItDialog',
+               'Get-IdoItLocationTree', 'Get-IdoItObject', 'Get-IdoItObjectByFilter',
+               'Get-IdoItObjectByRelation', 'Get-IdoItObjectType',
+               'Get-IdoItObjectTypeCategory', 'Get-IdoItObjectTypeGroup',
+               'Get-IdoItReport', 'Get-IdoItVersion', 'New-IdoItObject',
+               'Remove-IdoItCategory', 'Remove-IdoItDialog', 'Remove-IdoItObject',
+               'Set-IdoItCategory', 'Set-IdoItDialog', 'Set-IdoItObject')
 
-# Aus diesem Modul zu exportierende Cmdlets. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Cmdlets vorhanden sind.
-CmdletsToExport = '*'
+# Aus diesem Modul zu exportierende Cmdlets. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und l�schen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Cmdlets vorhanden sind.
+CmdletsToExport = @()
 
 # Die aus diesem Modul zu exportierenden Variablen
-VariablesToExport = '*'
+# VariablesToExport = @()
 
-# Aus diesem Modul zu exportierende Aliase. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und löschen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Aliase vorhanden sind.
-#AliasesToExport = '*'
+# Aus diesem Modul zu exportierende Aliase. Um optimale Leistung zu erzielen, verwenden Sie keine Platzhalter und l�schen den Eintrag nicht. Verwenden Sie ein leeres Array, wenn keine zu exportierenden Aliase vorhanden sind.
+AliasesToExport = @()
 
 # Aus diesem Modul zu exportierende DSC-Ressourcen
 # DscResourcesToExport = @()
@@ -89,37 +97,38 @@ VariablesToExport = '*'
 # Liste aller Dateien in diesem Modulpaket
 # FileList = @()
 
-# Die privaten Daten, die an das in "RootModule/ModuleToProcess" angegebene Modul übergeben werden sollen. Diese können auch eine PSData-Hashtabelle mit zusätzlichen von PowerShell verwendeten Modulmetadaten enthalten.
+# Die privaten Daten, die an das in "RootModule/ModuleToProcess" angegebene Modul �bergeben werden sollen. Diese k�nnen auch eine PSData-Hashtabelle mit zus�tzlichen von PowerShell verwendeten Modulmetadaten enthalten.
 PrivateData = @{
 
     PSData = @{
 
-        # 'Tags' wurde auf das Modul angewendet und unterstützt die Modulermittlung in Onlinekatalogen.
+        # Tags applied to this module. These help with module discovery in online galleries.
         # Tags = @()
 
-        # Eine URL zur Lizenz für dieses Modul.
+        # A URL to the license for this module.
         # LicenseUri = ''
 
-        # Eine URL zur Hauptwebsite für dieses Projekt.
+        # A URL to the main website for this project.
         # ProjectUri = ''
 
-        # Eine URL zu einem Symbol, das das Modul darstellt.
+        # A URL to an icon representing this module.
         # IconUri = ''
 
-        # 'ReleaseNotes' des Moduls
+        # ReleaseNotes of this module
         # ReleaseNotes = ''
 
-    } # Ende der PSData-Hashtabelle
+        # External dependent modules of this module
+        # ExternalModuleDependencies = ''
 
-} # Ende der PrivateData-Hashtabelle
+    } # End of PSData hashtable
+
+} # End of PrivateData hashtable
 
 # HelpInfo-URI dieses Moduls
 # HelpInfoURI = ''
 
-# Standardpräfix für Befehle, die aus diesem Modul exportiert werden. Das Standardpräfix kann mit "Import-Module -Prefix" überschrieben werden.
+# Standardpr�fix f�r Befehle, die aus diesem Modul exportiert werden. Das Standardpr�fix kann mit "Import-Module -Prefix" �berschrieben werden.
 # DefaultCommandPrefix = ''
 
-FormatsToProcess = 'psidoit.Format.ps1xml'
 }
-
 
