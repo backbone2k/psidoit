@@ -1,5 +1,5 @@
 ---
-external help file: psidoit-help.xml
+external help file: PsIdoIt-help.xml
 Module Name: PsIdoIt
 online version:
 schema: 2.0.0
@@ -21,7 +21,7 @@ Disconnect-IdoIt destroys the session to idoit and removes all session variables
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### EXAMPLE 1
 ```
 Disconnect-IdoIt
 ```

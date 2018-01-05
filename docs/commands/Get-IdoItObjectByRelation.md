@@ -22,7 +22,7 @@ Get-IdoItObjectByRelation [-Id] <Int32> [[-RelType] <Object>] [<CommonParameters
 ## EXAMPLES
 
 ### Example 1
-```powershell
+```
 PS C:\> {{ Add example code here }}
 ```
 
@@ -67,7 +67,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## INPUTS
 
 ### System.Int32
-
 
 ## OUTPUTS
 

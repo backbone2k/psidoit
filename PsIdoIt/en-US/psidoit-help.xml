@@ -711,7 +711,7 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Connect-Cmdb -Username 'admin' -Password 'admin' -Uri 'https://demo.i-doit.com/src/jsonrpc.php' -ApiKey 'asdaur'</dev:code>
         <dev:remarks>
           <maml:para>This will esatblish a session to demo.i-doit.com with api key asdaur for user admin</maml:para>
@@ -747,7 +747,7 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Disconnect-IdoIt</dev:code>
         <dev:remarks>
           <maml:para>This will disconnect from idoit</maml:para>
@@ -910,14 +910,14 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-IdoItCategory -Id 3411 -Category "C__CATG__ACCOUNTING"</dev:code>
         <dev:remarks>
           <maml:para>This command will return the accounting category for object 3411.</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 2 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-IdoItCategory -Id 55 -CatsId 1</dev:code>
         <dev:remarks>
           <maml:para>This command will return the specific category with id 1 for object with id 55.</maml:para>
@@ -1214,7 +1214,7 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-IdoItLocationTree -Id 38</dev:code>
         <dev:remarks>
           <maml:para>This will return all objects assigned to the parent object location with id 38</maml:para>
@@ -1229,11 +1229,13 @@
       <command:verb>Get</command:verb>
       <command:noun>IdoItObject</command:noun>
       <maml:description>
-        <maml:para>Get-IdoItObject</maml:para>
+        <maml:para>Gets an object from the idoit cmdb and returns it as a idoit.object object</maml:para>
       </maml:description>
     </command:details>
     <maml:description>
-      <maml:para>Get-IdoItObject lets you retreive an an object.</maml:para>
+      <maml:para>This cmdlet will return an idoit cmbd object for a provided id. The id can be get by find-idoitobject or by inspecting the idoit url when using the web interface.</maml:para>
+      <maml:para>Typically you will have an url like https://demo.i-doit.com/?objID=3569 The objID parameter contains the id.</maml:para>
+      <maml:para>So if you want to get the object from the above url with the Get-IdoItObject cmdlet you have to type in:     Get-IdoitObject -Id 3569</maml:para>
     </maml:description>
     <command:syntax>
       <command:syntaxItem>
@@ -1241,7 +1243,7 @@
         <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
           <maml:name>Id</maml:name>
           <maml:Description>
-            <maml:para>The id of the object you want to get back</maml:para>
+            <maml:para>This is the unique id of the object you want to get pull from the idoit cmdb.</maml:para>
           </maml:Description>
           <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
           <dev:type>
@@ -1250,13 +1252,27 @@
           </dev:type>
           <dev:defaultValue>0</dev:defaultValue>
         </command:parameter>
+        <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+          <maml:name>RawOutput</maml:name>
+          <maml:Description>
+            <maml:para>You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.</maml:para>
+            <maml:para>You have to put the parameter in parantheses like this: -RawOutput ([Ref]$Output)</maml:para>
+            <maml:para>The return value is a Microsoft.PowerShell.Commands.HtmlWebResponseObject</maml:para>
+          </maml:Description>
+          <command:parameterValue required="true" variableLength="false">PSReference</command:parameterValue>
+          <dev:type>
+            <maml:name>PSReference</maml:name>
+            <maml:uri />
+          </dev:type>
+          <dev:defaultValue>None</dev:defaultValue>
+        </command:parameter>
       </command:syntaxItem>
     </command:syntax>
     <command:parameters>
       <command:parameter required="true" variableLength="true" globbing="false" pipelineInput="False" position="1" aliases="none">
         <maml:name>Id</maml:name>
         <maml:Description>
-          <maml:para>The id of the object you want to get back</maml:para>
+          <maml:para>This is the unique id of the object you want to get pull from the idoit cmdb.</maml:para>
         </maml:Description>
         <command:parameterValue required="true" variableLength="false">Int32</command:parameterValue>
         <dev:type>
@@ -1265,20 +1281,34 @@
         </dev:type>
         <dev:defaultValue>0</dev:defaultValue>
       </command:parameter>
+      <command:parameter required="false" variableLength="true" globbing="false" pipelineInput="False" position="2" aliases="none">
+        <maml:name>RawOutput</maml:name>
+        <maml:Description>
+          <maml:para>You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.</maml:para>
+          <maml:para>You have to put the parameter in parantheses like this: -RawOutput ([Ref]$Output)</maml:para>
+          <maml:para>The return value is a Microsoft.PowerShell.Commands.HtmlWebResponseObject</maml:para>
+        </maml:Description>
+        <command:parameterValue required="true" variableLength="false">PSReference</command:parameterValue>
+        <dev:type>
+          <maml:name>PSReference</maml:name>
+          <maml:uri />
+        </dev:type>
+        <dev:defaultValue>None</dev:defaultValue>
+      </command:parameter>
     </command:parameters>
     <command:inputTypes />
     <command:returnValues />
     <maml:alertSet>
       <maml:alert>
-        <maml:para>Version 0.1.0     29.12.2017  CB  initial release</maml:para>
+        <maml:para>Version 0.1.0   29.12.2017  CB  initial release 0.2.0   05.01.2018  CB  Added support for RawOuput; Improved inline help</maml:para>
       </maml:alert>
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-IdoItObject -Id 1234</dev:code>
         <dev:remarks>
-          <maml:para>This will get the object 1234</maml:para>
+          <maml:para>This will get the object with the id &lt;1234&gt;</maml:para>
         </dev:remarks>
       </command:example>
     </command:examples>
@@ -1613,14 +1643,14 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-IdoItObjectByFilter -Title "web%" -Sort -OrderBy SysId</dev:code>
         <dev:remarks>
           <maml:para>This will get all objects that begin with web in the title. The result is sorted by sysid</maml:para>
         </dev:remarks>
       </command:example>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 2 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 2 --------------------------</maml:title>
         <dev:code>Get-IdoItObjectByFilter -Email "john.doe@acme.com"</dev:code>
         <dev:remarks>
           <maml:para>In this example you will get all perons with the email address &lt;john.doe@acme.com&gt;</maml:para>
@@ -1879,7 +1909,7 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Get-IdoItObjectType -Id 123,572,1349 -Enabled</dev:code>
         <dev:remarks>
           <maml:para>This will return the object types 123, 572 and 1349 but will filter out objects if they are not enabled.</maml:para>
@@ -2288,7 +2318,7 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>New-IdoItObject -Type 5 -Title "srv12345.domain.de" -Purpose "Production"</dev:code>
         <dev:remarks>
           <maml:para>This will create a new Object of type 5 (C_ OBJTYPE _SERVER) with the name srv12345.domain.de and the purpose "Production"</maml:para>
@@ -3054,7 +3084,7 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Remove-IdoItObject -Id 1234 -Archive</dev:code>
         <dev:remarks>
           <maml:para>This will archive the object with the id 1234</maml:para>
@@ -3665,7 +3695,7 @@
     </maml:alertSet>
     <command:examples>
       <command:example>
-        <maml:title>-------------------------- BEISPIEL 1 --------------------------</maml:title>
+        <maml:title>-------------------------- EXAMPLE 1 --------------------------</maml:title>
         <dev:code>Set-IdoItObject -Id 1234 -Title "srv12345.domain.de"</dev:code>
         <dev:remarks>
           <maml:para>This will change the title for object 1234 to srv12345.domain.de</maml:para>

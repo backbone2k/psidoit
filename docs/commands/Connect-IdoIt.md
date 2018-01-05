@@ -1,5 +1,5 @@
 ---
-external help file: psidoit-help.xml
+external help file: PsIdoIt-help.xml
 Module Name: PsIdoIt
 online version:
 schema: 2.0.0
@@ -33,7 +33,7 @@ Connect-Cmdb initalize the session to the idoit cmdb.
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### EXAMPLE 1
 ```
 Connect-Cmdb -Username 'admin' -Password 'admin' -Uri 'https://demo.i-doit.com/src/jsonrpc.php' -ApiKey 'asdaur'
 ```

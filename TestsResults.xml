@@ -1,18 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="3" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2018-01-04" time="15:39:48">
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="10" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2018-01-05" time="14:43:06">
   <environment user="appveyor" machine-name="APPVYR-WIN" cwd="C:\projects\psidoit" user-domain="APPVYR-WIN" platform="Microsoft Windows Server 2016 Datacenter|C:\Windows|\Device\Harddisk0\Partition4" nunit-version="2.5.8.0" os-version="10.0.14393" clr-version="4.0.30319.42000" />
   <culture-info current-culture="en-US" current-uiculture="en-US" />
-  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="0.7708" asserts="0">
+  <test-suite type="Powershell" name="Pester" executed="True" result="Success" success="True" time="1.7768" asserts="0">
     <results>
-      <test-suite type="TestFixture" name="Module Manifest Tests" executed="True" result="Success" success="True" time="0.606" asserts="0" description="Module Manifest Tests">
+      <test-suite type="TestFixture" name="Module Manifest Tests" executed="True" result="Success" success="True" time="0.61" asserts="0" description="Module Manifest Tests">
         <results>
-          <test-case description="Passes Test-ModuleManifest" name="Module Manifest Tests.Passes Test-ModuleManifest" time="0.606" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="Passes Test-ModuleManifest" name="Module Manifest Tests.Passes Test-ModuleManifest" time="0.61" asserts="0" success="True" result="Success" executed="True" />
         </results>
       </test-suite>
-      <test-suite type="TestFixture" name="Test-IdoitHttpSSL tests" executed="True" result="Success" success="True" time="0.1647" asserts="0" description="Test-IdoitHttpSSL tests">
+      <test-suite type="TestFixture" name="Invoke-IdoIt tests" executed="True" result="Success" success="True" time="0.9715" asserts="0" description="Invoke-IdoIt tests">
         <results>
-          <test-case description="Test https" name="Test-IdoitHttpSSL tests.Test https" time="0.1576" asserts="0" success="True" result="Success" executed="True" />
-          <test-case description="Test http" name="Test-IdoitHttpSSL tests.Test http" time="0.0071" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="Invoke" name="Invoke-IdoIt tests.Invoke" time="0.8147" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="Test raw output" name="Invoke-IdoIt tests.Test raw output" time="0.0399" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="Invoke" name="Invoke-IdoIt tests.Invoke" time="0.1168" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="functional test internal functions" executed="True" result="Success" success="True" time="0.0867" asserts="0" description="functional test internal functions">
+        <results>
+          <test-case description="ConvertFrom-IdoitJsonRespone test" name="functional test internal functions.ConvertFrom-IdoitJsonRespone test" time="0.0657" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="Compare-IdoItRequestId test" name="functional test internal functions.Compare-IdoItRequestId test" time="0.0085" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="New-IdoItRequestId test" name="functional test internal functions.New-IdoItRequestId test" time="0.0125" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="Test-IdoitHttpSSL tests" executed="True" result="Success" success="True" time="0.0258" asserts="0" description="Test-IdoitHttpSSL tests">
+        <results>
+          <test-case description="Test https" name="Test-IdoitHttpSSL tests.Test https" time="0.0196" asserts="0" success="True" result="Success" executed="True" />
+          <test-case description="Test http" name="Test-IdoitHttpSSL tests.Test http" time="0.0062" asserts="0" success="True" result="Success" executed="True" />
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="idoit object tests" executed="True" result="Success" success="True" time="0.0829" asserts="0" description="idoit object tests">
+        <results>
+          <test-case description="get object" name="idoit object tests.get object" time="0.0829" asserts="0" success="True" result="Success" executed="True" />
         </results>
       </test-suite>
     </results>

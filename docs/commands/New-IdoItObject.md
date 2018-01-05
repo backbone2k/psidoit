@@ -1,5 +1,5 @@
 ---
-external help file: psidoit-help.xml
+external help file: PsIdoIt-help.xml
 Module Name: PsIdoIt
 online version:
 schema: 2.0.0
@@ -32,7 +32,7 @@ It is a dynamic parameter
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### EXAMPLE 1
 ```
 New-IdoItObject -Type 5 -Title "srv12345.domain.de" -Purpose "Production"
 ```

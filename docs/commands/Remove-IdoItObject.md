@@ -1,5 +1,5 @@
 ---
-external help file: psidoit-help.xml
+external help file: PsIdoIt-help.xml
 Module Name: PsIdoIt
 online version:
 schema: 2.0.0
@@ -42,7 +42,7 @@ With Remove-IdoItObject you can archive, delete or purge a object from i-doit
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### EXAMPLE 1
 ```
 Remove-IdoItObject -Id 1234 -Archive
 ```

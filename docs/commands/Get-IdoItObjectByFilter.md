@@ -1,5 +1,5 @@
 ---
-external help file: psidoit-help.xml
+external help file: PsIdoIt-help.xml
 Module Name: PsIdoIt
 online version:
 schema: 2.0.0
@@ -29,7 +29,7 @@ With Get-IdoItObjectByFilter you can get one or more objects from i-doit cmdb th
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### EXAMPLE 1
 ```
 Get-IdoItObjectByFilter -Title "web%" -Sort -OrderBy SysId
 ```
@@ -37,7 +37,7 @@ Get-IdoItObjectByFilter -Title "web%" -Sort -OrderBy SysId
 This will get all objects that begin with web in the title.
 The result is sorted by sysid
 
-### BEISPIEL 2
+### EXAMPLE 2
 ```
 Get-IdoItObjectByFilter -Email "john.doe@acme.com"
 ```

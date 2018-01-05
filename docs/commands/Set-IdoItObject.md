@@ -1,5 +1,5 @@
 ---
-external help file: psidoit-help.xml
+external help file: PsIdoIt-help.xml
 Module Name: PsIdoIt
 online version:
 schema: 2.0.0
@@ -21,7 +21,7 @@ Set-IdoItObject lets you modify an existing objects title .
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### EXAMPLE 1
 ```
 Set-IdoItObject -Id 1234 -Title "srv12345.domain.de"
 ```

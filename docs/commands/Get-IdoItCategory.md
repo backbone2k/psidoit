@@ -1,5 +1,5 @@
 ---
-external help file: psidoit-help.xml
+external help file: PsIdoIt-help.xml
 Module Name: PsIdoIt
 online version:
 schema: 2.0.0
@@ -32,14 +32,14 @@ With Get-IdoItCategory you can retreive detailed information for a category for 
 
 ## EXAMPLES
 
-### BEISPIEL 1
+### EXAMPLE 1
 ```
 Get-IdoItCategory -Id 3411 -Category "C__CATG__ACCOUNTING"
 ```
 
 This command will return the accounting category for object 3411.
 
-### BEISPIEL 2
+### EXAMPLE 2
 ```
 Get-IdoItCategory -Id 55 -CatsId 1
 ```
