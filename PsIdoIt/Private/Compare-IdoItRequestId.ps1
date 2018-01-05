@@ -1,10 +1,12 @@
 Function Compare-IdoItRequestId {
 
     Param (
-        [String]$RequestID,
+        [String]$RequestId,
 
-        [String]$ResponseID
+        [String]$ResponseId
     )
+
+    Write-Verbose "Comparing RequestId $RequestId with ResponseId $ResponseId"
 
     Return ($ResponseID -eq $RequestID)
 

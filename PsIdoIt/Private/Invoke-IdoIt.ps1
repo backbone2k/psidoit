@@ -4,16 +4,35 @@ Function Invoke-IdoIt {
     Invoke-IdoIt
 
     .DESCRIPTION
-    The Invoke-IdoIt Cmdlet will call the i-doit RPC API endpoint with the provieded query parameters.
+    The Invoke-IdoIt Cmdlet will call the i-doit RPC API endpoint with the provieded query parameters and will return a WebRequest result.
+    The result of the web request is validated and if everything looks ok the cmdlet returns the property <result>.
+
+    The result is already converted from an JSON string into an PSObject. The NoteProperties that are returned depend on the provided method
+    for the idoit request.
 
     .PARAMETER Method
-    This parameter the Method we wan't to call at the RPC endpoint
+    This parameter the method yout want to call at the RPC endpoint. The different methods are descriped in the idoit api documentation.
+
+    If you define the "idoit.login" method you must provide the following headers:
+
+    X-RPC-Auth-Username = <Username>
+    X-RPC-Auth-Password = <Password>
+    Content-Type = "application/json"
 
     .PARAMETER Params
-    This is a hashtable with all method specific parameters to pass to the RPC endpoint
+    This is a hashtable objects with all method specific parameters to pass to the RPC endpoint. The different value/key pairs are described in the
+    idoit api reference.
+
+    Beside the values you pass to this parameter Invoke-IdoIt will always add some static ones like
+    - ApiKey
+    - Request id
+    - Version
+
+    ApiKey is read from a global variable.
 
     .PARAMETER Headers
-    This is an optional parameter to pass specific header fields in the POST request
+    This is an optional parameter to pass specific header fields in the POST request. This parameter is optional and only needed if you call the
+    idoit.login.
 
     .PARAMETER Uri
     The Uri parameter can be used to set the connection URI. If this optional parameter is not provided Invoke-IdoIt
@@ -60,7 +79,7 @@ Function Invoke-IdoIt {
         [Ref]$RawOutput
     )
 
-    $RequestId = Get-IdoItRequestId
+    $RequestId = New-IdoItRequestId
 
     $RequestBody = @{
         "method" = $Method

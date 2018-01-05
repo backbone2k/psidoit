@@ -1,29 +1,30 @@
 Function Add-ObjectTypeName {
 <#
     .SYNOPSIS
-        Decorate an object with a TypeName
+        Decorates a custom object with a custom type name
     .DESCRIPTION
-        Helper function to decorate an object with a TypeName
+        Helper function to decorate a custom object with a type name to apply things like formats to it.
+
+        It is a good idea to provide a type name to some of your object to apply custom formatting or result tests to them.
 
     .PARAMETER InputObject
-        Object to decorate. Accepts pipeline input.
+        Object to decorate with a custom type name. This paramter also accepts pipeline input.
 
     .PARAMETER TypeName
-        Typename to insert.
-
+        This is the type name yout want to insert into your custom object
         This will show up when you use Get-Member against the resulting object.
 
     .PARAMETER Passthru
-        Whether to pass the resulting object on. Defaults to true
+        Whether to pass the resulting object through. The default value is $true.
 
     .EXAMPLE
-        #
         # Create an object to work with
         $Object = [PSCustomObject]@{
             First = 'Cookie'
             Last = 'Monster'
             Account = 'CMonster'
         }
+
         #Add a type name
         Add-ObjectTypeName -InputObject $Object -TypeName 'ApplicationX.Account'
 
@@ -31,12 +32,12 @@ Function Add-ObjectTypeName {
             # -----  ----    -------
             # Cookie Monster CMonster
 
-        #Verify that get-member shows us the right type
+        #Verify that Get-Member shows us the right type
         $Object | Get-Member
             # TypeName: ApplicationX.Account ...
 
     .NOTES
-        Initial code borrowed from Warren Frame:
+        Initial code borrowed from Warren Frame - thanks for the great work!
         https://github.com/RamblingCookieMonster
 
     .LINK

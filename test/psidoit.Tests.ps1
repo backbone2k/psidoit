@@ -18,12 +18,6 @@ Describe 'Module Manifest Tests' {
     }
 }
 
-Describe -Name 'Ressource import tests' {
-    It 'Check ressources' {
-        $Ressources.SuccessCode | Should -Be 200
-    }
-}
-
 InModuleScope PsIdoIt {
     Describe -Name 'Invoke-IdoIt tests' -Fixture {
 
@@ -38,7 +32,7 @@ InModuleScope PsIdoIt {
                 }
             } -ModuleName PsIdoIt
 
-            Mock -CommandName Get-IdoItRequestId -Verifiable -MockWith {
+            Mock -CommandName New-IdoItRequestId -Verifiable -MockWith {
                 Return 1
             } -ModuleName PsIdoIt
 
@@ -72,7 +66,7 @@ InModuleScope PsIdoIt {
                 }
             } -ModuleName PsIdoIt
 
-            Mock -CommandName Get-IdoItRequestId -Verifiable -MockWith {
+            Mock -CommandName New-IdoItRequestId -Verifiable -MockWith {
                 Return 1
             } -ModuleName PsIdoIt
 
@@ -96,10 +90,15 @@ InModuleScope PsIdoIt {
             $Output | Should -BeExactly 'Test string with some quoted 12345 numbers'
         }
 
-        It -Name 'Compare-IdotRequestId test' -Test {
+        It -Name 'Compare-IdoItRequestId test' -Test {
             $Id = [Guid]::NewGuid()
             $Output = Compare-IdoItRequestId -RequestID $Id -ResponseId $Id
             $Output | Should -Be $True
+        }
+
+        It -Name 'New-IdoItRequestId test' -Test {
+            $Output = New-IdoItRequestId
+            $Output | Should -Not -Be $null
         }
     }
 }
@@ -113,5 +112,36 @@ InModuleScope PSIdoIt {
         It 'Test http' {
             Test-IdoitHttpSSL -Uri "http://some.domain.de/somePath" | Should Be $False
         }
+    }
+}
+
+InModuleScope PsIdoIt {
+    Describe -Name 'idoit object tests' -Fixture {
+
+        Context -Name 'Invoke successfull web requests' {
+            #Arrange
+            . $PSScriptRoot\Ressources.ps1
+
+            Mock -CommandName Invoke-WebRequest -Verifiable -MockWith {
+                Return [PSCustomObject]@{
+                    Content = $Ressources.getobject.SuccessMock
+                    StatusCode = $Ressources.SuccessCode
+                }
+            } -ModuleName PsIdoIt
+
+            Mock -CommandName New-IdoItRequestId -Verifiable -MockWith {
+                Return 1
+            } -ModuleName PsIdoIt
+
+
+
+            It -Name 'get object' -Test {
+
+                $Output = Get-IdoItObject -Id 3411
+                $Output.Id | Should -Be 3411
+
+            }
+        }
+
     }
 }
