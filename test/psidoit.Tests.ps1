@@ -41,7 +41,7 @@ InModuleScope PsIdoIt {
             It -Name 'Invoke' -Test {
 
                 $Output = Invoke-IdoIt -Params @{} -Method "some.method" -Uri "http://some.uri.de"
-                $Output.result | Should -Be $True
+                $Output.result | Should Be $True
                 Assert-VerifiableMock
 
             }
@@ -49,7 +49,7 @@ InModuleScope PsIdoIt {
             It -Name 'Test raw output' -Test {
                 $RawOuput = ""
                 $Null = Invoke-IdoIt -Params @{} -Method "some.method" -Uri "http://some.uri.de" -RawOutput ([Ref]$RawOuput)
-                $RawOuput.StatusCode | Should -Be $Ressources.SuccessCode
+                $RawOuput.StatusCode | Should Be $Ressources.SuccessCode
                 Assert-VerifiableMock
 
             }
@@ -93,12 +93,12 @@ InModuleScope PsIdoIt {
         It -Name 'Compare-IdoItRequestId test' -Test {
             $Id = [Guid]::NewGuid()
             $Output = Compare-IdoItRequestId -RequestID $Id -ResponseId $Id
-            $Output | Should -Be $True
+            $Output | Should Be $True
         }
 
         It -Name 'New-IdoItRequestId test' -Test {
             $Output = New-IdoItRequestId
-            $Output | Should -Not -Be $null
+            $Output | Should Not Be $null
         }
     }
 }
@@ -138,7 +138,7 @@ InModuleScope PsIdoIt {
             It -Name 'get object' -Test {
 
                 $Output = Get-IdoItObject -Id 3411
-                $Output.Id | Should -Be 3411
+                $Output.Id | Should Be 3411
 
             }
         }
