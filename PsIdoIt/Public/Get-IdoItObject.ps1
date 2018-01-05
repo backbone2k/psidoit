@@ -1,7 +1,7 @@
 function Get-IdoItObject {
     <#
     .SYNOPSIS
-    Gets an object from the idoit cmdb and returns it as a idoit.object object
+    Gets an object from the idoit cmdb and returns it as Idoit.Object object
 
     .DESCRIPTION
     This cmdlet will return an idoit cmbd object for a provided id. The id can be get by find-idoitobject or by inspecting the idoit url when
@@ -14,7 +14,7 @@ function Get-IdoItObject {
         Get-IdoitObject -Id 3569
 
     .PARAMETER Id
-    This is the unique id of the object you want to get pull from the idoit cmdb.
+    This is the unique id of the object you want to get pulled from the idoit cmdb.
 
     .PARAMETER RawOutput
     You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.
@@ -22,7 +22,17 @@ function Get-IdoItObject {
     You have to put the parameter in parantheses like this:
     -RawOutput ([Ref]$Output)
 
-    The return value is a Microsoft.PowerShell.Commands.HtmlWebResponseObject
+    The return value is [Microsoft.PowerShell.Commands.HtmlWebResponseObject
+
+    .INPUTS
+    System.Int32
+
+    You can pipe an integer that contains the id of the cmdb object.
+
+    .OUTPUTS
+    System.Object
+
+    The cmdlet returns a System.Object with the custom type name Idoit.Object.
 
     .EXAMPLE
     PS> Get-IdoItObject -Id 1234
