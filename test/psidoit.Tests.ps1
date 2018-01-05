@@ -87,7 +87,7 @@ InModuleScope PsIdoIt {
 
         It -Name 'ConvertFrom-IdoitJsonRespone test' -Test {
             $Output = ConvertFrom-IdoItJsonResponse -InputString 'Test string with some quoted "12345" numbers'
-            $Output | Should -BeExactly 'Test string with some quoted 12345 numbers'
+            $Output | Should BeExactly 'Test string with some quoted 12345 numbers'
         }
 
         It -Name 'Compare-IdoItRequestId test' -Test {
