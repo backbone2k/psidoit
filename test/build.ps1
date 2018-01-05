@@ -42,30 +42,29 @@ else
     }
 
     # Create new markdown and XML help files
-    #Write-Host "Building new function documentation" -ForegroundColor Yellow
-    #Import-Module -Name "$PSScriptRoot\..\PsIdoIt" -Force
-    #New-MarkdownHelp -Module Rubrik -OutputFolder '.\docs\commands\' -Force
-    #New-ExternalHelp -Path '.\docs\commands\' -OutputPath '.\Rubrik\en-US\' -Force
+    Write-Host "Building new function documentation" -ForegroundColor Yellow
+    Import-Module -Name "$PSScriptRoot\..\PsIdoIt" -Force
+    New-MarkdownHelp -Module PsIdoIt -OutputFolder '.\docs\commands\' -Force
+    New-ExternalHelp -Path '.\docs\commands\' -OutputPath '.\PsIdoIt\en-US\' -Force
     #. .\tests\docs.ps1
-    #Write-Host -Object ''
+    Write-Host -Object ''
 
     # Publish the new version to the PowerShell Gallery
     #Try
     #{
         # Build a splat containing the required details and make sure to Stop for errors which will trigger the catch
     #    $PM = @{
-    #        Path        = '.\Rubrik'
+    #        Path        = '.\PsIdoIt'
     #        NuGetApiKey = $env:NuGetApiKey
     #        ErrorAction = 'Stop'
     #    }
     #    Publish-Module @PM
-    #    Write-Host "Rubrik PowerShell Module version $newVersion published to the PowerShell Gallery." -ForegroundColor Cyan
+    #    Write-Host "PsIdoIt PowerShell Module version $newVersion published to the PowerShell Gallery." -ForegroundColor Cyan
     #}
     #Catch
     #{
-        # Sad panda; it broke
     #    Write-Warning "Publishing update $newVersion to the PowerShell Gallery failed."
-    #    throw $_
+    #    Throw $_
     #}
 
     # Publish the new version back to Master on GitHub
