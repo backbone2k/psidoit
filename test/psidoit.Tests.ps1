@@ -11,16 +11,6 @@ $PSVersion = $PSVersionTable.PSVersion.Major
 
 Import-Module $PSScriptRoot\..\PsIdoIt -Force
 
-. $PSScriptRoot\Ressources.ps1
-
-<#Settings for connecting
-$Settings = @{
-    Username = "admin"
-    Password = "admin"
-    Uri = "https://demo.i-doit.com/src/jsonrpc.php"
-    ApiKey = "c1ia5q"
-}#>
-
 Describe 'Module Manifest Tests' {
     It 'Passes Test-ModuleManifest' {
         Test-ModuleManifest -Path $ModuleManifestPath | Should Not BeNullOrEmpty
@@ -28,33 +18,91 @@ Describe 'Module Manifest Tests' {
     }
 }
 
-<#
-Describe -Name 'idoit login tests' -Fixture {
-
-    It -Name '[Login] Valid credentials' -Test {
-        #Arrange
-        Mock -CommandName Invoke-WebRequest -Verifiable -MockWith {
-            Return @{
-                Content = $Ressources.Login.SuccessMock
-                StatusCode = $Ressources.SuccessCode
-            }
-        } -ModuleName PSIdoIt
-
-        Mock -CommandName Get-IdoitVersion -Verifiable -MockWith {
-            Return @{Version="1.10"}
-        } -ModuleName PSIdoIt
-
-        Mock -CommandName Compare-IdoItRequestId -Verifiable -MockWith {
-            Return $True
-        } -ModuleName PSIdoIt
-        #Act
-        $Output = Connect-IdoIt -ConfigFile $PSScriptRoot\..\PsIdoIt\settings.json -Verbose
-        $Output.TenantId | Should Be 1
-        Assert-VerifiableMocks
+Describe -Name 'Ressource import tests' {
+    It 'Check ressources' {
+        $Ressources.SuccessCode | Should -Be 200
     }
 }
-#>
 
+InModuleScope PsIdoIt {
+    Describe -Name 'Invoke-IdoIt tests' -Fixture {
+
+        Context -Name 'Invoke successfull web requests' {
+            #Arrange
+            . $PSScriptRoot\Ressources.ps1
+
+            Mock -CommandName Invoke-WebRequest -Verifiable -MockWith {
+                Return [PSCustomObject]@{
+                    Content = $Ressources.Login.SuccessMock
+                    StatusCode = $Ressources.SuccessCode
+                }
+            } -ModuleName PsIdoIt
+
+            Mock -CommandName Get-IdoItRequestId -Verifiable -MockWith {
+                Return 1
+            } -ModuleName PsIdoIt
+
+
+
+            It -Name 'Invoke' -Test {
+
+                $Output = Invoke-IdoIt -Params @{} -Method "some.method" -Uri "http://some.uri.de"
+                $Output.result | Should -Be $True
+                Assert-VerifiableMock
+
+            }
+
+            It -Name 'Test raw output' -Test {
+                $RawOuput = ""
+                $Null = Invoke-IdoIt -Params @{} -Method "some.method" -Uri "http://some.uri.de" -RawOutput ([Ref]$RawOuput)
+                $RawOuput.StatusCode | Should -Be $Ressources.SuccessCode
+                Assert-VerifiableMock
+
+            }
+        }
+
+        Context -Name 'Invoke error web requests' {
+            #Arrange
+            . $PSScriptRoot\Ressources.ps1
+
+            Mock -CommandName Invoke-WebRequest -Verifiable -MockWith {
+                Return [PSCustomObject]@{
+                    Content = $Ressources.Login.ErrorMock
+                    StatusCode = $Ressources.SuccessCode
+                }
+            } -ModuleName PsIdoIt
+
+            Mock -CommandName Get-IdoItRequestId -Verifiable -MockWith {
+                Return 1
+            } -ModuleName PsIdoIt
+
+
+
+            It -Name 'Invoke' -Test {
+
+                { Invoke-IdoIt -Params @{} -Method "some.method" -Uri "http://some.uri.de" } | Should -Throw
+
+            }
+
+        }
+    }
+}
+
+InModuleScope PsIdoIt {
+    Describe -Name 'functional test internal functions' -Fixture {
+
+        It -Name 'ConvertFrom-IdoitJsonRespone test' -Test {
+            $Output = ConvertFrom-IdoItJsonResponse -InputString 'Test string with some quoted "12345" numbers'
+            $Output | Should -BeExactly 'Test string with some quoted 12345 numbers'
+        }
+
+        It -Name 'Compare-IdotRequestId test' -Test {
+            $Id = [Guid]::NewGuid()
+            $Output = Compare-IdoItRequestId -RequestID $Id -ResponseId $Id
+            $Output | Should -Be $True
+        }
+    }
+}
 
 InModuleScope PSIdoIt {
     Describe 'Test-IdoitHttpSSL tests' {

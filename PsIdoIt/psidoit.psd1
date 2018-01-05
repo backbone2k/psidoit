@@ -24,13 +24,13 @@ GUID = 'ab55d75d-c735-4e3b-80c1-d001bb7bdd60'
 Author = 'Christian Baumgartner'
 
 # Company or vendor of this module
-CompanyName = 'Unbekannt'
+CompanyName = 'PsIdoIt'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 Christian Baumgartner. Alle Rechte vorbehalten.'
+Copyright = '(c) 2018 Christian Baumgartner. All rights reserved.'
 
 # Description of the functionality provided by this module
-# Description = ''
+Description = 'This is community project that adds PowerShell to the list of i-doit api implementations.'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '3.0'
@@ -48,19 +48,19 @@ PowerShellVersion = '3.0'
 # CLRVersion = ''
 
 # Processor architecture (None, X86, Amd64) required by this module
-# ProcessorArchitecture = ''
+ProcessorArchitecture = 'None'
 
 # Modules that must be imported into the global environment prior to importing this module
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-# RequiredAssemblies = @()
+RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-# ScriptsToProcess = @()
+ScriptsToProcess = @()
 
 # Type files (.ps1xml) to be loaded when importing this module
-# TypesToProcess = @()
+TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
 FormatsToProcess = 'psidoit.Format.ps1xml'
@@ -69,21 +69,21 @@ FormatsToProcess = 'psidoit.Format.ps1xml'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @('Add-IdoItCategory', 'Add-IdoItDialog', 'Connect-IdoIt', 
-               'Disconnect-IdoIt', 'Find-IdoItObjects', 'Get-IdoItCategory', 
-               'Get-IdoItCategoryInfo', 'Get-IdoItConstant', 'Get-IdoItDialog', 
-               'Get-IdoItLocationTree', 'Get-IdoItObject', 'Get-IdoItObjectByFilter', 
-               'Get-IdoItObjectByRelation', 'Get-IdoItObjectType', 
-               'Get-IdoItObjectTypeCategory', 'Get-IdoItObjectTypeGroup', 
-               'Get-IdoItReport', 'Get-IdoItVersion', 'New-IdoItObject', 
-               'Remove-IdoItCategory', 'Remove-IdoItDialog', 'Remove-IdoItObject', 
+FunctionsToExport = @('Add-IdoItCategory', 'Add-IdoItDialog', 'Connect-IdoIt',
+               'Disconnect-IdoIt', 'Find-IdoItObjects', 'Get-IdoItCategory',
+               'Get-IdoItCategoryInfo', 'Get-IdoItConstant', 'Get-IdoItDialog',
+               'Get-IdoItLocationTree', 'Get-IdoItObject', 'Get-IdoItObjectByFilter',
+               'Get-IdoItObjectByRelation', 'Get-IdoItObjectType',
+               'Get-IdoItObjectTypeCategory', 'Get-IdoItObjectTypeGroup',
+               'Get-IdoItReport', 'Get-IdoItVersion', 'New-IdoItObject',
+               'Remove-IdoItCategory', 'Remove-IdoItDialog', 'Remove-IdoItObject',
                'Set-IdoItCategory', 'Set-IdoItDialog', 'Set-IdoItObject')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
 
 # Variables to export from this module
-# VariablesToExport = @()
+VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = @()
@@ -95,7 +95,7 @@ AliasesToExport = @()
 # ModuleList = @()
 
 # List of all files packaged with this module
-# FileList = @()
+FileList = @()
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
@@ -103,13 +103,13 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        # Tags = @()
+        Tags = @('I-doIt','Cmdb')
 
         # A URL to the license for this module.
-        # LicenseUri = ''
+        LicenseUri = 'https://github.com/backbone2k/psidoit/blob/master/LICENSE'
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'https://github.com/backbone2k/psidoit'
 
         # A URL to an icon representing this module.
         # IconUri = ''

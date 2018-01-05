@@ -60,8 +60,7 @@ Function Invoke-IdoIt {
         [Ref]$RawOutput
     )
 
-    $RequestId = [Guid]::NewGuid()
-    Write-Verbose "Request id: $RequestId"
+    $RequestId = Get-IdoItRequestId
 
     $RequestBody = @{
         "method" = $Method
@@ -71,14 +70,20 @@ Function Invoke-IdoIt {
     }
 
     #Add the API Key to the params if it is not already defined
-    If (!$RequestBody.params.ContainsKey("ApiKey")) {
-        $RequestBody.params.Add("apikey", $Global:cmdbApiKey)
+    If (!$RequestBody.Params.ContainsKey("ApiKey")) {
+
+        $RequestBody.Params.Add("apikey", $Global:cmdbApiKey)
+
     }
 
     If (!$RequestBody.params.ContainsKey("Uri")) {
+
         If ($Global:CmdbUri.Length -gt 0) {
+
             $Uri = $Global:cmdbUri
+
         }
+
     }
 
     $RequestBody = ConvertTo-Json -InputObject $RequestBody -Depth 4
@@ -86,7 +91,9 @@ Function Invoke-IdoIt {
     Write-Verbose "Request body: $RequestBody"
 
     If (!$PSBoundParameters.ContainsKey("Headers")) {
+
         $Headers = @{"Content-Type" = "application/json"; "X-RPC-Auth-Session" = $global:cmdbSession}
+
     }
 
     Write-Verbose "Request headers: $($Headers | Out-String)"
@@ -107,8 +114,10 @@ Function Invoke-IdoIt {
     }
 
     If ($PSBoundParameters.ContainsKey("RawOutput")) {
+
         Write-Verbose "RawOuput parameter provided. Saving raw data to ref variable"
         $RawOutput.Value = $InvokeResult
+
     }
 
     If ($InvokeResult.StatusCode -eq 200) {
@@ -153,6 +162,9 @@ Function Invoke-IdoIt {
 
 
 
+    }
+    Else {
+        Return "Error"
     }
 
 }
