@@ -1,7 +1,7 @@
 Function Get-IdoItCategory {
     <#
         .SYNOPSIS
-        Get-IdoItCategory
+        Get category objects from the i-doit cmdb for a provided object id
 
         .DESCRIPTION
         With Get-IdoItCategory you can retreive detailed information for a category for a given object.
