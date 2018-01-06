@@ -33,8 +33,8 @@ environment:
     secure: cAf/TYMI5Vl2NGItSvBRg/rebUWDgAUsuNZMn4e5r6soiKp8vfYLwwMud2rSNedg
 
 # Install NuGet to interact with the PowerShell Gallery
-install:
-  - ps: . .\test\install.ps1
+#install:
+#  - ps: . .\test\install.ps1
 
 # Invoke Pester to run all of the unit tests, then save the results into XML in order to populate the AppVeyor tests section
 # If any of the tests fail, consider the pipeline failed

@@ -32,3 +32,8 @@ I will provide some basic usage and also some example ps1 scripts as soon as the
 tests are in place.
 
 
+## Thank you!
+A big thanks goes to RamblingCookieMonster for inspiring me for the CI/CD. I have taken his code. If you wan't to learn more about CI/CD with PowerShell here is some
+fantastic literature:
+http://ramblingcookiemonster.github.io/GitHub-Pester-AppVeyor/
+https://github.com/RamblingCookieMonster/PSDeploy
