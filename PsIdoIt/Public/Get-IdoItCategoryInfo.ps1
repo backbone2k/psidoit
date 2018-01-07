@@ -15,6 +15,11 @@ Function Get-IdoItCategoryInfo {
         .PARAMETER CatsId
         With CatsId you can pass an id of a specific catgeory from table isysgui_cats
 
+        .EXAMPLE
+        PS>Get-IdoitCategoryInfo -Category 'C__CATG__CPU'
+
+        Gives you detailed Info for the category 'C___CATG__CPU'
+
         .NOTES
         Version
         0.1.0     29.12.2017  CB  initial release

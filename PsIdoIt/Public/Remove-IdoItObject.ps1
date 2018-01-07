@@ -18,7 +18,7 @@ Function Remove-IdoItObject {
         .PARAMETER Purge
         When this switch is provided, the object is purged
 
-        .PARAMETER Quicpurge
+        .PARAMETER Quickpurge
         When this switch is provided, the object is going through all states and is purged at the end.
 
         .EXAMPLE

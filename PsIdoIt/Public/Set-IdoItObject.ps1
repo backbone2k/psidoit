@@ -6,7 +6,7 @@ Function Set-IdoItObject {
         .DESCRIPTION
         Set-IdoItObject lets you modify an existing objects title .
 
-        .PARAMETER Type
+        .PARAMETER Id
         This parameter either the type id of the object you want to modify.
 
         .PARAMETER Title

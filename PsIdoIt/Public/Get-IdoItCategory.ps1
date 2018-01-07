@@ -34,6 +34,14 @@ Function Get-IdoItCategory {
 
         CatsId is for specific category ids
 
+        .PARAMETER RawOutput
+        You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.
+
+        You have to put the parameter in parantheses like this:
+        -RawOutput ([Ref]$Output)
+
+        The return value is [Microsoft.PowerShell.Commands.HtmlWebResponseObject
+
         .EXAMPLE
         PS> Get-IdoItCategory -Id 3411 -Category "C__CATG__ACCOUNTING"
 

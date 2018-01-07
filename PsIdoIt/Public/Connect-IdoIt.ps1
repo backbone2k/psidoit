@@ -6,11 +6,8 @@ function Connect-IdoIt {
     .DESCRIPTION
     Connect-Cmdb initalize the session to the idoit cmdb.
 
-    .PARAMETER Username
+    .PARAMETER Credential
     User with appropiate permissions to access the cmdb.
-
-    .PARAMETER Password
-    The password for the user to access the cmdb.
 
     .PARAMETER ApiKey
     This is the apikey you define in idoit unter Settings-> Interface-> JSON-RPC API to access the api
@@ -24,6 +21,11 @@ function Connect-IdoIt {
     .PARAMETER ConfigFile
     You can provide a path to a settings file in json format. It must containt username, password, apikey and
     uri as key-value pairs
+
+    .PARAMETER NoTLS
+    If you provide this switch parameter, you can connect to unsecure http endpoints without TLS encryption.
+
+    Be aware, that the username and password transferd plaintext in the header.
 
     .PARAMETER RawOutput
     You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.

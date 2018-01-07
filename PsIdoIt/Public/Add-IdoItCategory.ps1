@@ -4,7 +4,7 @@ Function Add-IdoItCategory {
         Add-IdoItCategory
 
         .DESCRIPTION
-        With Net-CmdbCategory you can add a category object for a given object.
+        With Add-CmdbCategory you can add a category object for a given object.
 
         .PARAMETER Id
         This parameter contains the id of the object you want to add a category
@@ -20,6 +20,11 @@ Function Add-IdoItCategory {
 
         .PARAMETER Data
         The data parameter takes a hashtable with all the key-value pairs of the category you want to add
+
+        .EXAMPLE
+        PS>Add-IdoItCategory -Id 3411 -Category 'C__CATG__CPU' -Data @{Title='test'}
+
+        Adds a new category object in the category CPU for object 3411 with the value title=test
 
         .NOTES
         Version
