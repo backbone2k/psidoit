@@ -62,36 +62,38 @@ Task Build -Depends Test {
     # Load the module, read the exported functions, update the psd1 FunctionsToExport
     Set-ModuleFunctions
 
-    # Bump the module version if we didn't already
-    Try
-    {
+    If ( $env:BHBuildSystem -eq 'AppVeyor') {
+        # Bump the module version if we didn't already
+        Try
+        {
 
-        #[System.Version]$version = $manifest.Version
-        #Write-Output "Old Version: $version"
-        #[String]$newVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $version.Build, $env:APPVEYOR_BUILD_NUMBER)
-        #Write-Output "New Version: $newVersion"
+            #[System.Version]$version = $manifest.Version
+            #Write-Output "Old Version: $version"
+            #[String]$newVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $version.Build, $env:APPVEYOR_BUILD_NUMBER)
+            #Write-Output "New Version: $newVersion"
 
-        # Update the manifest with the new version value and fix the weird string replace bug
-        #$functionList = ((Get-ChildItem -Path .\PSIdoIt\Public).BaseName)
-        #Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion -FunctionsToExport $functionList
-        #(Get-Content -Path $manifestPath) -replace 'PSGet_Rubrik', 'Rubrik' | Set-Content -Path $manifestPath
-        #(Get-Content -Path $manifestPath) -replace 'NewManifest', 'Rubrik' | Set-Content -Path $manifestPath
-        #(Get-Content -Path $manifestPath) -replace 'FunctionsToExport = ', 'FunctionsToExport = @(' | Set-Content -Path $manifestPath -Force
-        #(Get-Content -Path $manifestPath) -replace "$($functionList[-1])'", "$($functionList[-1])')" | Set-Content -Path $manifestPath -Force
+            # Update the manifest with the new version value and fix the weird string replace bug
+            #$functionList = ((Get-ChildItem -Path .\PSIdoIt\Public).BaseName)
+            #Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion -FunctionsToExport $functionList
+            #(Get-Content -Path $manifestPath) -replace 'PSGet_Rubrik', 'Rubrik' | Set-Content -Path $manifestPath
+            #(Get-Content -Path $manifestPath) -replace 'NewManifest', 'Rubrik' | Set-Content -Path $manifestPath
+            #(Get-Content -Path $manifestPath) -replace 'FunctionsToExport = ', 'FunctionsToExport = @(' | Set-Content -Path $manifestPath -Force
+            #(Get-Content -Path $manifestPath) -replace "$($functionList[-1])'", "$($functionList[-1])')" | Set-Content -Path $manifestPath -Force
 
-        [version]$GithubVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
-        Write-Output "Old Version: $GithubVersion"
+            [version]$GithubVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
+            Write-Output "Old Version: $GithubVersion"
 
-        [version]$AppVeyorVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $version.Build, $env:APPVEYOR_BUILD_NUMBER)
-        #[version]$GithubVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
-        if($AppVeyorVersion -ge $GithubVersion) {
-            Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value $GalleryVersion -ErrorAction stop
-            Write-Output "New Version: $AppVeyorVersion"
+            [version]$AppVeyorVersion = New-Object -TypeName System.Version -ArgumentList ($GithubVersion.Major, $GithubVersion.Minor, $GithubVersion.Build, $env:APPVEYOR_BUILD_NUMBER)
+            #[version]$GithubVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
+            if($AppVeyorVersion -ge $GithubVersion) {
+                Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value $GalleryVersion -ErrorAction stop
+                Write-Output "New Version: $AppVeyorVersion"
+            }
         }
-    }
-    Catch
-    {
-        "Failed to update version for '$env:BHProjectName': $_.`nContinuing with existing version"
+        Catch
+        {
+            "Failed to update version for '$env:BHProjectName': $_.`nContinuing with existing version"
+        }
     }
 }
 
