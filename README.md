@@ -18,7 +18,7 @@ The second part is not implemented yet. The focus is on a robust base implementa
 
 ## Installation
 
-If you are using PowerShell 5 or have NuGet installed you can installing PsIdoIt by simply entering
+If you are using PowerShell 5 or have NuGet installed you can install PsIdoIt by simply entering
 
 ```
 PS> Install-Module PsIdoIt
