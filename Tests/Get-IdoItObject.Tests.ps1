@@ -9,7 +9,7 @@ Import-Module (Join-Path $ENV:BHProjectPath $ENV:BHProjectName) -Force
 
 InModuleScope $ENV:BHProjectName {
     $PSVersion = $PSVersionTable.PSVersion.Major
-    $ProjectRoot = $ENV:BHProjectPath
+    #$ProjectRoot = $ENV:BHProjectPath
 
     $Verbose = @{}
 
@@ -18,8 +18,6 @@ InModuleScope $ENV:BHProjectName {
         $Verbose.Add("Verbose", $True)
 
     }
-
-
 
     Describe -Name "Get-IdoItObject PS$PSVersion" {
 
