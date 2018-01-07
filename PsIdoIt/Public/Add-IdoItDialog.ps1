@@ -15,6 +15,11 @@ Function Add-IdoItDialog {
         .PARAMETER Value
         This is the new value
 
+        .EXAMPLE
+        PS>Add-IdoItDialog -Category 'C__CATG__CPU' -Property 'Manufacturer' -Value 'ARM'
+
+        Adds the Value ARM to the CPU Category in the Property Manufacturer
+
         .NOTES
         Version
         0.1.0     29.12.2017  CB  initial release

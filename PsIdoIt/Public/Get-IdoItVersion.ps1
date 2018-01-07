@@ -6,6 +6,11 @@ Function Get-IdoItVersion {
     .DESCRIPTION
     Retreive the i-doit version
 
+    .EXAMPLE
+    PS> Get-IdoItVersion
+
+    This gives you the i-doit Version
+
     .NOTES
     Version
     0.1.0   29.12.2017  CB  initial release

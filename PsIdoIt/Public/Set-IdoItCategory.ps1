@@ -21,6 +21,11 @@ Function Set-IdoItCategory {
         .PARAMETER Data
         The data parameter takes a hashtable with all the key-value pairs of the category you want to change.
 
+        .EXAMPLE
+        PS> Set-IdoItCategory -Id 3411 -Category 'C__CATG__CPU' -Data @{Manufacturer='Intel'}
+
+        Changes the Manufacturer for the CPU to Intel for object 3411
+
         .NOTES
         Version
         0.1.0     29.12.2017  CB  initial release

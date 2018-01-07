@@ -1,27 +1,37 @@
 Function Get-IdoItObjectTypeCategory {
-<#
+    <#
     .SYNOPSIS
     Get-IdoItObjectTypeCategory
 
     .DESCRIPTION
     Calling this Cmdlet you retreive all the available Categories for this object type
 
-    .PARAMETER TypeId
+    .PARAMETER Type
     Defines the type id you wan't to retreive the configured categories
+
+    .EXAMPLE
+    PS> Get-IdoItObjectTypeCategory -Type 'C__OBJTYPE__SERVER'
+
+    This will get all aategories that are assigned to the ObjectType 'Server'
 
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release
-#>
+    #>
     [CmdletBinding()]
     [OutputType([System.Object[]])]
     Param (
-        [Parameter( Mandatory = $True, ValueFromPipeline = $True, Position = 0)]
+        [Parameter (
+            Mandatory = $True,
+            ValueFromPipeline = $True,
+            Position = 0
+        )]
         [Alias("TypeId")]
         $Type
     )
 
     Process {
+
         $Params = @{}
         $Params.Add("type", $Type)
 

@@ -6,6 +6,22 @@ Function Get-IdoItObjectTypeGroup {
     .DESCRIPTION
     Calling this Cmdlet you retreive all the available object type groups configured in idoit
 
+    .PARAMETER Limit
+    Limits the number of Items the function returns.
+
+    .PARAMETER Sort
+    ** THIS SHOULD BE REMOVED - WE CAN USE Sort-Object **
+
+    .PARAMETER OrderBy
+    Can be Id, Title, Status or Constant and defines the Order in wich the result is comfing from the SQL Query
+
+    ** THIS SHOULD BE REMOVED - WE CAN USE Sort-Object **
+
+    .EXAMPLE
+    PS> Get-IdoItObjectTypeGroup
+
+    This will get all Type Groups
+
     .NOTES
     Version
     0.1.0     29.12.2017  CB  initial release

@@ -10,6 +10,16 @@ Function Get-IdoItReport {
        .PARAMETER Id
        Optional parameter that, if provided executes the report with the id and shows the results
 
+       .EXAMPLE
+       PS> Get-IdoItReport
+
+       Gets all Reports
+
+       .EXAMPLE
+       PS> Get-IdoItReport -Id 23
+
+       Runs Report with Id 23 and outputs the result
+
        .NOTES
        Version
        0.1.0     29.12.2017  CB  initial release

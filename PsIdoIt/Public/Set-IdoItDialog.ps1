@@ -1,26 +1,31 @@
 Function Set-IdoItDialog {
     <#
-        .SYNOPSIS
-        Set-IdoItDialog
+    .SYNOPSIS
+    Set-IdoItDialog
 
-        .DESCRIPTION
-        Change the values of a dialog+ entry
+    .DESCRIPTION
+    Change the values of a dialog+ entry
 
-        .PARAMETER Category
-        This parameter takes a constant name of a specific category
+    .PARAMETER Category
+    This parameter takes a constant name of a specific category
 
-        .PARAMETER Property
-        This is the name of the dialog+ property you want to change the value
+    .PARAMETER Property
+    This is the name of the dialog+ property you want to change the value
 
-        .PARAMETER Value
-        This is the new value
+    .PARAMETER Value
+    This is the new value
 
-        .PARAMETER ElementId
-        This is the id of the element you want to set a new value.
+    .PARAMETER ElementId
+    This is the id of the element you want to set a new value.
 
-        .NOTES
-        Version
-        0.1.0     29.12.2017  CB  initial release
+    .EXAMPLE
+    PS> Set-IdoItDialog -Category 'C__CATG__CPU' -Property 'Manufacturer' -Value 'AMD'
+
+    Sets the CPU manufacturer to Value AMD
+
+    .NOTES
+    Version
+    0.1.0     29.12.2017  CB  initial release
     #>
         [CmdletBinding( SupportsShouldProcess = $True)]
         Param (

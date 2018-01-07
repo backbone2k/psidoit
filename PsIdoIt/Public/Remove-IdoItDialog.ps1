@@ -15,6 +15,11 @@ Function Remove-IdoItDialog {
         .PARAMETER ElementId
         This is the id of the element you want remove
 
+        .EXAMPLE
+        PS> Remove-IdoItDialog -Category 'C__CATG__CPU' -Property 'Manufacturer' -ElementId 123
+
+        Removes the element id 123 from the Dialog+ list Manufacturer
+
         .NOTES
         Version
         0.1.0     29.12.2017  CB  initial release

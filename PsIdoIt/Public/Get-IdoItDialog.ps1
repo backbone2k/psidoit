@@ -12,6 +12,11 @@ Function Get-IdoItDialog {
         .PARAMETER Property
         This is the name of the dialog+ property you want to get the values
 
+        .EXAMPLE
+        PS>Get-IdoItDialog -Category 'Cat' -Propertey 'Prop'
+
+        Gets a dialog value list for a given property
+
         .NOTES
         Version
         0.1.0     29.12.2017  CB  initial release

@@ -21,6 +21,11 @@ Function Remove-IdoItCategory {
         .PARAMETER ElementId
         This value is mandatory for multi value categories like CPU or hostaddress.
 
+        .EXAMPLE
+        PS> Remove-IdoItCategory -Id 3411 -CatgId 53 -ElementId 393
+
+        Removes from category 53 the element with the id 393 for the object 3411
+
         .NOTES
         Version
         0.1.0     29.12.2017  CB  initial release

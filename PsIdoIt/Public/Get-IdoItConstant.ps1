@@ -6,6 +6,11 @@ Function Get-IdoItConstant {
         .DESCRIPTION
         Get-IdoItConstant lets you retreive all available Constants in i-doit
 
+        .EXAMPLE
+        PS>Get-IdoItConstant
+
+        Gives you all the constants
+
         .NOTES
         Version
         0.1.0     30.12.2017  CB  initial release
