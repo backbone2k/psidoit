@@ -97,7 +97,7 @@ Task Build -Depends Test {
     }
 }
 
-Task Deploy -Depends Update {
+Task Deploy -Depends Build {
     $lines
 
     $Params = @{
@@ -108,7 +108,7 @@ Task Deploy -Depends Update {
     Invoke-PSDeploy @Verbose @Params
 }
 
-Task Update -Depends Build {
+<#Task Update -Depends Build {
     Try
     {
         # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
@@ -141,4 +141,4 @@ Task Update -Depends Build {
         Write-Warning "Publishing update $BuildVersion to GitHub failed."
         Throw $_
     }
-}
+}#>
