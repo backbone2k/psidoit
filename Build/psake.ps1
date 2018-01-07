@@ -65,10 +65,28 @@ Task Build -Depends Test {
     # Bump the module version if we didn't already
     Try
     {
-        [version]$GalleryVersion = Get-NextPSGalleryVersion -Name $env:BHProjectName -ErrorAction Stop
+
+        #[System.Version]$version = $manifest.Version
+        #Write-Output "Old Version: $version"
+        #[String]$newVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $version.Build, $env:APPVEYOR_BUILD_NUMBER)
+        #Write-Output "New Version: $newVersion"
+
+        # Update the manifest with the new version value and fix the weird string replace bug
+        #$functionList = ((Get-ChildItem -Path .\PSIdoIt\Public).BaseName)
+        #Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion -FunctionsToExport $functionList
+        #(Get-Content -Path $manifestPath) -replace 'PSGet_Rubrik', 'Rubrik' | Set-Content -Path $manifestPath
+        #(Get-Content -Path $manifestPath) -replace 'NewManifest', 'Rubrik' | Set-Content -Path $manifestPath
+        #(Get-Content -Path $manifestPath) -replace 'FunctionsToExport = ', 'FunctionsToExport = @(' | Set-Content -Path $manifestPath -Force
+        #(Get-Content -Path $manifestPath) -replace "$($functionList[-1])'", "$($functionList[-1])')" | Set-Content -Path $manifestPath -Force
+
         [version]$GithubVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
-        if($GalleryVersion -ge $GithubVersion) {
+        Write-Output "Old Version: $GithubVersion"
+
+        [version]$AppVeyorVersion = New-Object -TypeName System.Version -ArgumentList ($version.Major, $version.Minor, $version.Build, $env:APPVEYOR_BUILD_NUMBER)
+        #[version]$GithubVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
+        if($AppVeyorVersion -ge $GithubVersion) {
             Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value $GalleryVersion -ErrorAction stop
+            Write-Output "New Version: $AppVeyorVersion"
         }
     }
     Catch
@@ -86,4 +104,26 @@ Task Deploy -Depends Build {
         Recurse = $false # We keep psdeploy artifacts, avoid deploying those : )
     }
     Invoke-PSDeploy @Verbose @Params
+}
+
+Task Update -Depends Build {
+    Try
+    {
+        # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
+        # Note that "update version" is included in the appveyor.yml file's "skip a build" regex to avoid a loop
+        $env:Path += ";$env:ProgramFiles\Git\cmd"
+        Import-Module posh-git -ErrorAction Stop
+        git checkout master
+        git add --all
+        git status
+        git commit -s -m "Update version to $AppVeyorVersion"
+        git push origin master
+        Write-Host "PsIdoIt PowerShell Module version $AppVeyorVersion published to GitHub." -ForegroundColor Cyan
+    }
+    Catch
+    {
+        # Sad panda; it broke
+        Write-Warning "Publishing update $AppVeyorVersion to GitHub failed."
+        throw $_
+    }
 }
