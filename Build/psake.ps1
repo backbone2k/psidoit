@@ -86,7 +86,7 @@ Task Build -Depends Test {
             [version]$AppVeyorVersion = New-Object -TypeName System.Version -ArgumentList ($GithubVersion.Major, $GithubVersion.Minor, $GithubVersion.Build, $env:APPVEYOR_BUILD_NUMBER)
             #[version]$GithubVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
             if($AppVeyorVersion -ge $GithubVersion) {
-                Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value $GalleryVersion -ErrorAction stop
+                Update-Metadata -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -Value $AppVeyorVersion -ErrorAction stop
                 Write-Output "New Version: $AppVeyorVersion"
             }
         }
