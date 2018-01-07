@@ -1,4 +1,4 @@
-$Ressources = @{
+$Data = @{
     SuccessCode = 200
     ErrorCode = 200
     login = @{
@@ -9,12 +9,19 @@ $Ressources = @{
         SuccessMock = '{"jsonrpc":"2.0","result":{"id":"3411","title":"web009","sysid":"SRV_000003411","objecttype":"5","type_title":"Server","type_icon":"images\/icons\/silk\/server.png","status":"2","cmdb_status":"6","cmdb_status_title":"in operation","created":"2017-03-06 17:01:37","updated":"2017-03-07 14:23:48","image":"https:\/\/demo.i-doit.com\/images\/objecttypes\/server.png"},"id":"1"}'
 
     }
-}
+    IdoitObject = @{
+        id                  = 1
+        title               = 'Object'
+        type_title          = 'TypeTitle'
+        sysid               = 'SysId'
+        objecttype          = 5
+        type_icon           = 'images/icons/silk/server.png'
+        status              = 2
+        cmdb_status         = 6
+        cmdb_status_title   = 'in operation'
+        created             = '2017-03-06 17:01:37'
+        updated             = '2017-03-07 14:23:48'
+        image               = 'https://demo.i-doit.com/images/objecttypes/server.png'
 
-$a= [PSCustomObject]@{
-    Content = $Ressources.Login.SuccessMock
-    StatusCode = $Ressources.SuccessCode
+    }
 }
-$a | get-member
-
-(ConvertFrom-Json $a.Content).result.userid

@@ -43,6 +43,7 @@ function Get-IdoItObject {
     Version
     0.1.0   29.12.2017  CB  initial release
     0.2.0   05.01.2018  CB  Added support for RawOuput; Improved inline help
+    0.2.1   07.01.2018  CB Added Try/Catch block around Invoke-IdoIt
     #>
         param (
             [Parameter (
@@ -72,7 +73,17 @@ function Get-IdoItObject {
             $SplattingParameter.Add("RawOutput", $RawOutput)
         }
 
-        $ResultObj = Invoke-IdoIt @SplattingParameter
+        Try {
+
+            $ResultObj = Invoke-IdoIt @SplattingParameter
+
+        }
+        Catch {
+
+            Throw $_
+
+        }
+
 
 
         $ResultObj = $ResultObj | Add-ObjectTypeName -TypeName 'Idoit.Object'

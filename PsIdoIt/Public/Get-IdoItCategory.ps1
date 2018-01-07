@@ -1,22 +1,38 @@
 Function Get-IdoItCategory {
     <#
         .SYNOPSIS
-        Get category objects from the i-doit cmdb for a provided object id
+        Get category information from the i-doit cmdb for a specific object id.
 
         .DESCRIPTION
-        With Get-IdoItCategory you can retreive detailed information for a category for a given object.
+        Get detailed information for a category for a given object. The resulting information depends mainly on the category you
+        are requesting.
 
         .PARAMETER Id
-        This parameter contains the id of the object you want to query a category
+        This is the  id of the object you want to query a category for. This parameter takes an integer and it should be greater than 0.
+
+        You can also provide a value by pipline.
 
         .PARAMETER Category
-        This parameter takes a constant name of a specific category
+        This parameter takes the constant name of a specific category you want to get information.
+
+        The available constants can be retreived with Get-IdoItConstant.
 
         .PARAMETER CatgId
-        With CatgId you can pass an id of a global category from table isysgui_catg
+        Instead of providing a constant name for a category you can also pass an category id
+        There are two types of categories available:
+        - Global categories
+        - Specific categories
+
+        CatgId is for global category ids
+
 
         .PARAMETER CatsId
-        With CatsId you can pass an id of a specific catgeory from table isysgui_cats
+        Instead of providing a constant name for a category you can also pass an category id
+        There are two types of categories available:
+        - Global categories
+        - Specific categories
+
+        CatsId is for specific category ids
 
         .EXAMPLE
         PS> Get-IdoItCategory -Id 3411 -Category "C__CATG__ACCOUNTING"
@@ -30,21 +46,40 @@ Function Get-IdoItCategory {
 
         .NOTES
         Version
-        0.1.0     29.12.2017  CB  initial release
+        0.1.0   29.12.2017  CB  initial release
+        0.1.1   06.01.2018  CB  Updated inline help; Added RawOuput parameter
     #>
         [CmdletBinding()]
         Param (
-            [Parameter(Mandatory = $True, ValueFromPipelineByPropertyName=$true, Position=0)]
-            [int]$Id,
+            [Parameter (
+                Mandatory = $True,
+                ValueFromPipelineByPropertyName = $True,
+                Position=0
+            )]
+            [Int]$Id,
 
-            [Parameter(Mandatory = $True, ParameterSetName="Category")]
-            [string]$Category,
+            [Parameter (
+                Mandatory = $True,
+                ParameterSetName = "Category"
+            )]
+            [String]$Category,
 
-            [Parameter(Mandatory = $True, ParameterSetName="CatgId")]
-            [int]$CatgId,
+            [Parameter (
+                Mandatory = $True,
+                ParameterSetName = "CatgId"
+            )]
+            [Int]$CatgId,
 
-            [Parameter(Mandatory = $True, ParameterSetName="CatsId")]
-            [int]$CatsId
+            [Parameter (
+                Mandatory = $True,
+                ParameterSetName = "CatsId"
+            )]
+            [int]$CatsId,
+
+            [Parameter (
+                Mandatory = $False
+            )]
+            [Ref]$RawOutput
         )
 
 
@@ -59,19 +94,38 @@ Function Get-IdoItCategory {
                 "CatsId" { $Params.Add("catsID",$CatsId); Break }
             }
 
+            $SplattingParameter = @{
+                Method = "cmdb.category.read"
+                Params = $Params
+            }
 
-            $ResultObj = Invoke-IdoIt -Method "cmdb.category.read" -Params $Params
+            If ($PSBoundParameters.ContainsKey("RawOutput")) {
+                $SplattingParameter.Add("RawOutput", $RawOutput)
+            }
 
-            #We remove the property original property id and rename objID to id to be consistant and be able to pipe results to
+            Try {
+                $ResultObj = Invoke-IdoIt @SplattingParameter
+            }
+            Catch {
+                Throw $_
+            }
+
+            #We remove the original property id and rename objID to id to be consistant and be able to pipe results to
             #other Cmdlets
 
             ForEach ($O in $ResultObj) {
+
                 If (@("CatgId", "CatsId") -contains $PSCmdlet.ParameterSetName) {
+
                     $O | Add-Member -MemberType NoteProperty -Name $PSCmdlet.ParameterSetName.ToLower() -Value $O.Id
+
                 }
                 Else {
+
                     $O | Add-Member -MemberType NoteProperty -Name "category" -Value $Category
+
                 }
+
                 $O.Id = $O.ObjID
                 $O.PSObject.Properties.Remove("objID")
 
