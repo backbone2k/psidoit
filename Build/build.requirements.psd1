@@ -21,4 +21,8 @@
         DependencyType = 'PSGalleryNuget'
         Version = '3.4.6'
     }
+    'posh-git' = @{
+        DependencyType = 'PSGalleryNuget'
+    }
+
 }
