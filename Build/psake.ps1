@@ -97,7 +97,7 @@ Task Build -Depends Test {
     }
 }
 
-Task Deploy -Depends Build {
+Task Deploy -Depends Update {
     $lines
 
     $Params = @{
