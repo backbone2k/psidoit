@@ -120,7 +120,7 @@ Task Update -Depends Build {
         #Import-Module posh-git -ErrorAction Stop
 
         Write-Output "Checkout $($env:BHBranchName)"
-        exec { git checkout $env:BHBranchName }
+        exec { git checkout $env:BHBranchName 2>&1 } #git is sometimes sending stdout to stderr - this is a pitty
 
         Write-Output "Git add --all"
         exec { git add --all }
