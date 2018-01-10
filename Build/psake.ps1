@@ -116,11 +116,11 @@ Task Update -Depends Build {
         # Note that "update version" is included in the appveyor.yml file's "skip a build" regex to avoid a loop
         [version]$BuildVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
         $env:Path += ";$env:ProgramFiles\Git\cmd"
-        #Write-Output "Importing posh-git"
-        #Import-Module posh-git -ErrorAction Stop
+        Write-Output "Importing posh-git"
+        Import-Module posh-git -ErrorAction Stop
 
         Write-Output "Checkout $($env:BHBranchName)"
-        exec { git checkout $env:BHBranchName 2>&1 } #git is sometimes sending stdout to stderr - this is a pitty
+        exec { git checkout $env:BHBranchName 2> $Null } #git is sometimes sending stdout to stderr - this is a pitty
 
         Write-Output "Git add --all"
         exec { git add --all }
