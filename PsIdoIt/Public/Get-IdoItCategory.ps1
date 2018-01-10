@@ -56,13 +56,27 @@ Function Get-IdoItCategory {
         Version
         0.1.0   29.12.2017  CB  initial release
         0.1.1   06.01.2018  CB  Updated inline help; Added RawOuput parameter
+        0.1.2   10.01.2018  CB  Fixed pipline behavoir for the Id parameter
     #>
         [CmdletBinding()]
         Param (
             [Parameter (
                 Mandatory = $True,
-                ValueFromPipelineByPropertyName = $True,
-                Position=0
+                ValueFromPipeline = $True,
+                Position=0,
+                ParameterSetName = "Category"
+            )]
+            [Parameter (
+                Mandatory = $True,
+                ValueFromPipeline = $True,
+                Position=0,
+                ParameterSetName = "CatgId"
+            )]
+            [Parameter (
+                Mandatory = $True,
+                ValueFromPipeline = $True,
+                Position=0,
+                ParameterSetName = "CatsId"
             )]
             [Int]$Id,
 

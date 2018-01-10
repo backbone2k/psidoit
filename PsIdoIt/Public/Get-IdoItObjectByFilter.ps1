@@ -6,14 +6,14 @@ Function Get-IdoItObjectByFilter {
         .DESCRIPTION
         With Get-IdoItObjectByFilter you can get one or more objects from i-doit cmdb that can be filtered by type, name, sys-id etc.
 
+        .PARAMETER Title
+        With Title you can fFilter objects by their title.
+
         .PARAMETER Id
         Set this parameter to filter objects by an array of object ids
 
         .PARAMETER TypeId
         Set this parameter to filter objects by a type id.
-
-        .PARAMETER Title
-        With Title you can fFilter objects by their title.
 
         .PARAMETER SysId
         Filter objects by their sys id value.
@@ -52,17 +52,23 @@ Function Get-IdoItObjectByFilter {
 
         .NOTES
         Version
-        0.1.0     29.12.2017  CB  initial release
+        0.1.0   29.12.2017  CB  initial release
+        0.2.0   10.01.2018  CB  Added Titel SupportWildcards.
     #>
         Param (
-            [Parameter(Mandatory=$false, ParameterSetName = "NonPerson", Position=0)]
+            [Parameter (
+                Mandatory = $False,
+                ParameterSetName = "NonPerson",
+                Position = 0
+            )]
+            [SupportsWildcards()]
+            [String]$Title,
+
+            [Parameter(Mandatory=$false, ParameterSetName = "NonPerson")]
             [int[]]$Id,
 
             [Parameter(Mandatory=$false, ParameterSetName = "NonPerson")]
             [int]$TypeId,
-
-            [Parameter(Mandatory=$false, ParameterSetName = "NonPerson")]
-            [string]$Title,
 
             [Parameter(Mandatory=$false, ParameterSetName = "NonPerson")]
             [string]$SysId,
@@ -99,7 +105,10 @@ Function Get-IdoItObjectByFilter {
             Switch ($PSBoundParameter) {
                 "Id" { $Filter.Add("ids", $Id); break }
                 "TypeId" {$Filter.Add("type", $TypeId); break }
-                "Title" { $Filter.Add("title", $Title); break }
+                "Title" {
+                    $Filter.Add("title", ( ConvertTo-IdoItSQLWildcard -InputString $Title ))
+                    Break
+                }
                 "SysID" { $Filter.Add("sysid", $SysId); break }
                 "TypeTitle" { $Filter.Add("type_title", $TypeTitle); break }
                 "FirstName" { $Filter.Add("first_name", $FirstName); break }
