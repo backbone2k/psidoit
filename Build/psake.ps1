@@ -2,6 +2,7 @@
 # Init some things
 Properties {
     # Find the build folder based on build system
+    Set-BuildEnvironment
         $ProjectRoot = $ENV:BHProjectPath
         if(-not $ProjectRoot)
         {
