@@ -2,7 +2,7 @@
 # Init some things
 Properties {
     # Find the build folder based on build system
-    Set-BuildEnvironment
+
         $ProjectRoot = $ENV:BHProjectPath
         if(-not $ProjectRoot)
         {
@@ -119,8 +119,8 @@ Task Update -Depends Build {
         #Write-Output "Importing posh-git"
         #Import-Module posh-git -ErrorAction Stop
 
-        Write-Output "Checkout $($env:BranchName)"
-        exec { git checkout $env:BranchName }
+        Write-Output "Checkout $($env:BHBranchName)"
+        exec { git checkout $env:BHBranchName }
 
         Write-Output "Git add --all"
         exec { git add --all }
@@ -132,7 +132,7 @@ Task Update -Depends Build {
         exec { git commit -s -m "Update version to $BuildVersion" }
 
         Write-Output "Git push"
-        exec { git push origin $env:BranchName }
+        exec { git push origin $env:BHBranchName }
 
         Write-Host "PsIdoIt PowerShell Module version $BuildVersion published to GitHub." -ForegroundColor Cyan
     }
