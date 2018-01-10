@@ -110,8 +110,8 @@ Task Deploy -Depends Update {
 }
 
 Task Update -Depends Build {
-    Try
-    {
+   # Try
+   # {
         # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
         # Note that "update version" is included in the appveyor.yml file's "skip a build" regex to avoid a loop
         [version]$BuildVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
@@ -135,11 +135,11 @@ Task Update -Depends Build {
         exec { git push origin $env:BHBranchName }
 
         Write-Host "PsIdoIt PowerShell Module version $BuildVersion published to GitHub." -ForegroundColor Cyan
-    }
-    Catch
-    {
+    #}
+    #Catch
+    #{
         # Sad panda; it broke
-        Write-Warning "Publishing update $BuildVersion to GitHub failed."
-        Throw $_
-    }
+    #    Write-Warning "Publishing update $BuildVersion to GitHub failed."
+    #    Throw $_
+    #}
 }
