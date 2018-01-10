@@ -131,7 +131,7 @@ Task Update -Depends Build {
         exec { git commit -s -m "Update version to $BuildVersion" }
 
         Write-Output "Git push"
-        exec { git push origin master }
+        exec { git push origin $env:BranchName }
 
         Write-Host "PsIdoIt PowerShell Module version $BuildVersion published to GitHub." -ForegroundColor Cyan
     }
