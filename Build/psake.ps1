@@ -109,7 +109,7 @@ Task Deploy -Depends Update {
     Invoke-PSDeploy @Verbose @Params
 }
 
-Task Update -Depends Build {
+Task Update -Depends Build -ContinueOnError {
    # Try
    # {
         # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
