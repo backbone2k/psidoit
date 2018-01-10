@@ -119,8 +119,8 @@ Task Update -Depends Build -ContinueOnError {
         Write-Output "Importing posh-git"
         Import-Module posh-git -ErrorAction Stop
 
-        Write-Output "Checkout $($env:BHBranchName)"
-        exec { git checkout $env:BHBranchName 2> $Null } #git is sometimes sending stdout to stderr - this is a pitty
+        #Write-Output "Checkout $($env:BHBranchName)"
+        #exec { git checkout $env:BHBranchName 2> $Null } #git is sometimes sending stdout to stderr - this is a pitty
 
         Write-Output "Git add --all"
         exec { git add --all }
