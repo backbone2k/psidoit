@@ -46,6 +46,7 @@ function Connect-IdoIt {
     0.2.0   31.12.2017  CB  some major redesign for the parameter sets
     0.3.0   02.01.2018  CB  Using Credential object instead of username & password (https://github.com/PowerShell/PSScriptAnalyzer/issues/363)
     0.3.1   03.01.2018  CB  Added Verbose/Debug output, ParameterSplatting to the Invoke and RawOuput
+    0.4.0   15.01.2018  CB  Beginning to include caching of some static env constants etc. to the user dir
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
     [Cmdletbinding()]
@@ -101,7 +102,12 @@ function Connect-IdoIt {
         [Parameter (
             Mandatory = $False
         )]
-        [Switch]$NoTls
+        [Switch]$NoTls,
+
+        [Parameter (
+            Mandatory = $False
+        )]
+        [Switch]$ForceCacheRebuild
 
 
     )
@@ -174,23 +180,63 @@ function Connect-IdoIt {
 
     # More work needed :-)
     Try {
-
+       # $VerbosePreference = Continue
         $CachePath = $env:APPDATA+"\.psidoit"
-        $CacheFile = "constantcache.json"
+        $CacheMetaDataFile = $CachePath + "\cachemetadata.json"
+        $CacheConstantFile = $CachePath + "\constantcache.json"
+
+        $ValidCache = $True
 
         If ( -Not (Test-Path $CachePath ) ) {
             New-Item -ItemType Directory -Path $CachePath
         }
 
+        #Create a cache meta file to store cache age and some other stuff into it
+        Write-Verbose "Checking if cache metadata file exists"
+        If ( Test-Path -Path $CacheMetaDataFile ) {
 
-        ConvertTo-Json -InputObject (Get-IdoItConstant) -Depth 2 | Out-File -FilePath ($CachePath + "\" + $CacheFile) -Encoding default -Force:$True
+            Write-Verbose "Found existing metadata file. Loading content"
+            $CacheMetaData = Get-Content $CacheMetaDataFile -Encoding Default -Raw | ConvertFrom-Json
+            $MaxCacheAge = New-TimeSpan -Days 1
+            $TimeSpan = New-TimeSpan -Start ([Datetime]::parseexact($CacheMetaData.Created, "o", $Null))
 
+            If ($TimeSpan -gt $MaxCacheAge) {
+
+                Write-Verbose "Cache MaxAge reached - forcing rebuild of the cache"
+                $ValidCache = $False
+
+            } Else {
+
+                Write-Verbose "Cache MaxAge not reached - skipping rebuild of cache"
+                $ValidCache = $True
+
+            }
+
+        }
+        ElseIf ( (-Not $ValidCache ) -or ( -Not (Test-Path -Path $CacheMetaDataFile) ) ) {
+
+            $CacheMetaData = @{
+                Created = (Get-Date -Format o)
+            }
+
+            ConvertTo-Json -InputObject $CacheMetaData -Depth 2 | Out-File -FilePath $CacheMetaDataFile -Encoding default -Force:$True
+
+        }
+
+        If ( ( -not $ValidCache ) -or ( $ForceCacheRebuild ) -or (-Not (Test-Path -Path $CacheConstantFile)) ) {
+
+            Write-Verbose "Creating idoit constant cache file"
+            ConvertTo-Json -InputObject (Get-IdoItConstant) -Depth 2 | Out-File -FilePath ($CacheConstantFile) -Encoding default -Force:$True
+
+        }
     }
     Catch {
 
         Throw $_
 
     }
+
+
     Return $LoginResult
 }
 

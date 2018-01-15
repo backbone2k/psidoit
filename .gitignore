@@ -2,3 +2,6 @@
 ######################
 .vscode/
 settings.json
+*.nupkg
+*.zip
+*.nuspec
