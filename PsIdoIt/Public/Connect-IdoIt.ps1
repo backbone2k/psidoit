@@ -27,6 +27,10 @@ function Connect-IdoIt {
 
     Be aware, that the username and password transferd plaintext in the header.
 
+    .PARAMETER ForceCacheRebuild
+    ForceCacheRebuild instructs Connect-IdoIt to re-create all the cache files regardless of their age. This can be usefull
+    if there are a lot of changes going on in your i-doit installation and you wan't to be sure you have the latest configuration
+
     .PARAMETER RawOutput
     You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.
 
