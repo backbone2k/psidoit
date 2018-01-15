@@ -98,7 +98,7 @@ Task Build -Depends Test {
     }
 }
 
-Task Deploy -Depends Update {
+Task Deploy -Depends Build {
     $lines
 
     $Params = @{
@@ -107,39 +107,4 @@ Task Deploy -Depends Update {
         Recurse = $false # We keep psdeploy artifacts, avoid deploying those : )
     }
     Invoke-PSDeploy @Verbose @Params
-}
-
-Task Update -Depends Build -ContinueOnError {
-   # Try
-   # {
-        # Set up a path to the git.exe cmd, import posh-git to give us control over git, and then push changes to GitHub
-        # Note that "update version" is included in the appveyor.yml file's "skip a build" regex to avoid a loop
-        [version]$BuildVersion = Get-MetaData -Path $env:BHPSModuleManifest -PropertyName ModuleVersion -ErrorAction Stop
-        $env:Path += ";$env:ProgramFiles\Git\cmd"
-        Write-Output "Importing posh-git"
-        Import-Module posh-git -ErrorAction Stop
-
-        #Write-Output "Checkout $($env:BHBranchName)"
-        #exec { git checkout $env:BHBranchName 2> $Null } #git is sometimes sending stdout to stderr - this is a pitty
-
-        Write-Output "Git add --all"
-        exec { git add --all }
-
-        Write-Output "Git status"
-        exec { git status }
-
-        Write-Output "Git commit"
-        exec { git commit -s -m "Update version to $BuildVersion" }
-
-        Write-Output "Git push"
-        exec { git push origin $env:BHBranchName }
-
-        Write-Host "PsIdoIt PowerShell Module version $BuildVersion published to GitHub." -ForegroundColor Cyan
-    #}
-    #Catch
-    #{
-        # Sad panda; it broke
-    #    Write-Warning "Publishing update $BuildVersion to GitHub failed."
-    #    Throw $_
-    #}
 }
