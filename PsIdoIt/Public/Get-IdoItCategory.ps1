@@ -7,6 +7,14 @@ Function Get-IdoItCategory {
         Get detailed information for a category for a given object. The resulting information depends mainly on the category you
         are requesting.
 
+        DYNAMIC PARAMETERS
+        -Category <String>
+            This parameter takes the constant of a global or specific category you want to get information for this object. This is a dynamic parameter
+            that will pull the available values in from the users constant cache.
+
+            To get an overview of the available constants you can call
+            PS> Get-IdoItConstant | Where-Object {(($_.Type -eq "Global") -or ($_.Type -eq "Specific"))}
+
         .PARAMETER Id
         This is the  id of the object you want to query a category for. This parameter takes an integer and it should be greater than 0.
 
@@ -15,7 +23,7 @@ Function Get-IdoItCategory {
         .PARAMETER Category
         This parameter takes the constant name of a specific category you want to get information.
 
-        The available constants can be retreived with Get-IdoItConstant.
+
 
         .PARAMETER CatgId
         Instead of providing a constant name for a category you can also pass an category id
@@ -57,6 +65,7 @@ Function Get-IdoItCategory {
         0.1.0   29.12.2017  CB  initial release
         0.1.1   06.01.2018  CB  Updated inline help; Added RawOuput parameter
         0.1.2   10.01.2018  CB  Fixed pipline behavoir for the Id parameter
+        0.2.0   15.01.2018  CB  Added dynamic paramter category that pulls constant cache in the validate set
     #>
         [CmdletBinding()]
         Param (
@@ -80,11 +89,11 @@ Function Get-IdoItCategory {
             )]
             [Int]$Id,
 
-            [Parameter (
-                Mandatory = $True,
-                ParameterSetName = "Category"
-            )]
-            [String]$Category,
+            #[Parameter (
+            #    Mandatory = $True,
+            #    ParameterSetName = "Category"
+            #)]
+            #[String]$Category,
 
             [Parameter (
                 Mandatory = $True,
@@ -104,6 +113,43 @@ Function Get-IdoItCategory {
             [Ref]$RawOutput
         )
 
+        DynamicParam {
+            $ParamName_Category = "Category"
+
+            # Create the collection of attributes
+            $AttributeCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+
+            # Create and set the parameters' attributes
+            $ParameterAttribute = New-Object System.Management.Automation.ParameterAttribute
+            $ParameterAttribute.Mandatory = $True
+            $ParameterAttribute.ParameterSetName = "Category"
+
+
+            # Add the attributes to the attributes collection
+            $AttributeCollection.Add($ParameterAttribute)
+            # Create the dictionary
+            $RuntimeParameterDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+            # Generate and set the ValidateSet
+
+            $CachePath = $env:APPDATA+"\.psidoit"
+            $CacheFile = "constantcache.json"
+
+            $Category = Get-Content -Path ($CachePath + "\" + $CacheFile) -Raw -Encoding Default | ConvertFrom-Json | Where-Object {(($_.type -eq "Global") -or ($_.type -eq "Specific"))}
+
+            $arrSet = $Category.Const
+            $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)
+            # Add the ValidateSet to the attributes collection
+            $AttributeCollection.Add($ValidateSetAttribute)
+            # Create and return the dynamic parameter
+            $RuntimeParameter = New-Object System.Management.Automation.RuntimeDefinedParameter($ParamName_Category, [string], $AttributeCollection)
+            $RuntimeParameterDictionary.Add($ParamName_Category, $RuntimeParameter)
+
+            Return $RuntimeParameterDictionary
+        }
+
+        Begin {
+            $Category = $PsBoundParameters[$ParamName_Category]
+        }
 
         Process {
 

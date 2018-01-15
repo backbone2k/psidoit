@@ -172,6 +172,25 @@ function Connect-IdoIt {
         Throw "PSCmdb needs minimum Version 1.7 to work. You are running i-doit $($CmdbVer.Major).$($CmdbVer.Minor)"
     }
 
+    # More work needed :-)
+    Try {
+
+        $CachePath = $env:APPDATA+"\.psidoit"
+        $CacheFile = "constantcache.json"
+
+        If ( -Not (Test-Path $CachePath ) ) {
+            New-Item -ItemType Directory -Path $CachePath
+        }
+
+
+        ConvertTo-Json -InputObject (Get-IdoItConstant) -Depth 2 | Out-File -FilePath ($CachePath + "\" + $CacheFile) -Encoding default -Force:$True
+
+    }
+    Catch {
+
+        Throw $_
+
+    }
     Return $LoginResult
 }
 
