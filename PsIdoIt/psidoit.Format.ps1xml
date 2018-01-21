@@ -18,7 +18,6 @@
                         <Width>30</Width>
                     </TableColumnHeader>
                     <TableColumnHeader>
-                        <Label>Type</Label>
                         <Width>15</Width>
                     </TableColumnHeader>
                 </TableHeaders>
@@ -36,7 +35,7 @@
                                 <PropertyName>Title</PropertyName>
                             </TableColumnItem>
                             <TableColumnItem>
-                                <PropertyName>Type_Title</PropertyName>
+                                <PropertyName>TypeTitle</PropertyName>
                             </TableColumnItem>
                         </TableColumnItems>
                     </TableRowEntry>

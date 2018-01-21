@@ -45,7 +45,7 @@ function Get-IdoItObject {
     0.2.0   05.01.2018  CB  Added support for RawOuput; Improved inline help
     0.2.1   07.01.2018  CB Added Try/Catch block around Invoke-IdoIt
     #>
-        param (
+        Param (
             [Parameter (
                 Mandatory = $True
             )]
@@ -85,9 +85,9 @@ function Get-IdoItObject {
         }
 
 
-
+        $ResultObj = $ResultObj | ConvertFrom-IdoItResultObject
         $ResultObj = $ResultObj | Add-ObjectTypeName -TypeName 'Idoit.Object'
-        $ResultObj = $ResultObj | Add-ObjectDefaultPropertySet -DefaultProperties 'Id', 'SysId', 'Title', 'Type_Title'
+        $ResultObj = $ResultObj | Add-ObjectDefaultPropertySet -DefaultProperties 'Id', 'SysId', 'Title', 'TypeTitle'
 
         Return $ResultObj
 

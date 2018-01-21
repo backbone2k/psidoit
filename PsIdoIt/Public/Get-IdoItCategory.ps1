@@ -89,12 +89,6 @@ Function Get-IdoItCategory {
             )]
             [Int]$Id,
 
-            #[Parameter (
-            #    Mandatory = $True,
-            #    ParameterSetName = "Category"
-            #)]
-            #[String]$Category,
-
             [Parameter (
                 Mandatory = $True,
                 ParameterSetName = "CatgId"
@@ -198,6 +192,6 @@ Function Get-IdoItCategory {
 
             $ResultObj = $ResultObj | Add-ObjectTypeName -TypeName 'Idoit.Category'
 
-            Return $ResultObj
+            Return $ResultObj | ConvertFrom-IdoItResultObject
         }
     }

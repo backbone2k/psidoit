@@ -1,5 +1,30 @@
 Function ConvertFrom-IdoItResultObject {
+    <#
+   .SYNOPSIS
+   This helper function does some formatting and flattening to the original idoit result-
 
+   .DESCRIPTION
+   This helper function does some formatting and flattening to the original idoit result.
+
+   It will Pascal-Case the property names and also removes '_' from the names.
+   Idoit will also return relations within the answers. We flatten these results a little bit to make it more easy to use results without
+   to much knowledge of the idoit relation model.
+
+   .PARAMETER InputObject
+   Takes one or more PSObjects and makes property names nicely and flattens the result if parameter NoFlatten is not provided
+
+   .PARAMETER NoFlatten
+   This switch will not change the original object structure of the object.
+
+   .EXAMPLE
+   PS> ConvertFrom-IdoItResultObject -InputObject (Get-IdoItCategory -Id 3411 -Category C__CATG__IP)
+
+   This will the cache for idoit constants
+
+   .NOTES
+   Version
+   0.1.0   20.01.2018 CB  initial release
+   #>
     [CmdletBinding ()]
     Param (
         [Parameter (
@@ -18,7 +43,6 @@ Function ConvertFrom-IdoItResultObject {
         $InputObjectProperties = $_.PSObject.Properties
         $HelperObject = [PSCustomObject]@{}
 
-        #$NoFlattening = $True
 
         Foreach ($Property in $InputObjectProperties)
         {
@@ -57,6 +81,19 @@ Function ConvertFrom-IdoItResultObject {
                     {
 
                         $HelperObject | Add-Member -MemberType $Property.MemberType -Name $PropertyName -Value $Property.Value
+
+                    }
+
+                    If ($Property.Value.PSObject.Properties.Name -contains 'ref_id')
+                    {
+
+                        $HelperObject | Add-Member -MemberType $Property.MemberType -Name ($PropertyName+'Id') -Value $Property.Value.ref_id
+
+                    }
+                    ElseIf ($Property.Value.PSObject.Properties.Name -contains 'id')
+                    {
+
+                        $HelperObject | Add-Member -MemberType $Property.MemberType -Name ($PropertyName+'Id') -Value $Property.Value.ref_id
 
                     }
 
