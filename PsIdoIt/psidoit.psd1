@@ -12,7 +12,7 @@
 RootModule = 'PsIdoIt.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.1.0.52'
+ModuleVersion = '0.1.0.54'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
