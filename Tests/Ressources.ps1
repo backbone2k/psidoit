@@ -9,7 +9,7 @@ $Data = @{
         SuccessMock = '{"jsonrpc":"2.0","result":{"id":"3411","title":"web009","sysid":"SRV_000003411","objecttype":"5","type_title":"Server","type_icon":"images\/icons\/silk\/server.png","status":"2","cmdb_status":"6","cmdb_status_title":"in operation","created":"2017-03-06 17:01:37","updated":"2017-03-07 14:23:48","image":"https:\/\/demo.i-doit.com\/images\/objecttypes\/server.png"},"id":"1"}'
 
     }
-    IdoitObject = @{
+    IdoitObject = [PSCustomObject]@{
         id                  = 1
         title               = 'Object'
         type_title          = 'TypeTitle'

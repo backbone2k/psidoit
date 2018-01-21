@@ -20,10 +20,6 @@ Function Get-IdoItCategory {
 
         You can also provide a value by pipline.
 
-        .PARAMETER Category
-        This parameter takes the constant name of a specific category you want to get information.
-
-
 
         .PARAMETER CatgId
         Instead of providing a constant name for a category you can also pass an category id
