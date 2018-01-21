@@ -187,7 +187,7 @@ Function Get-IdoItCategory {
                 }
                 Else {
 
-                    $O | Add-Member -MemberType NoteProperty -Name "category" -Value $Category
+                    $O | Add-Member -MemberType NoteProperty -Name "RefCategory" -Value $Category
 
                 }
 
