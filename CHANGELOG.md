@@ -10,7 +10,7 @@
 - Added: Create a constant cache in the users romaing profile when calling Connect-IdoIt
 - Added: DynamicParameter validate set for parameter <Category> that pulls constants from the psidoit cache
 
-##v0.1.0.5x - 01/21/2018
+##v0.1.0.54 - 01/21/2018
 
 - Added: Get-IdoItCategory and Get-IdoItObject return easyier to understand objects by flattening contained sub-objects
 - Improved: Cache handling refractored into seperate functions
