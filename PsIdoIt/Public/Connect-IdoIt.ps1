@@ -116,7 +116,13 @@ function Connect-IdoIt {
 
     )
 
-    if ($PSCmdlet.ParameterSetName -eq "SetA") {
+    # When –Debug is used, we will not get a prompt each time it is used :-) Thanks to Boe Prox
+    # https://learn-powershell.net/2014/06/01/prevent-write-debug-from-bugging-you/
+    If ($PSBoundParameters['Debug']) {
+        $DebugPreference = 'Continue'
+    }
+
+    If ($PSCmdlet.ParameterSetName -eq "SetA") {
         $SettingsParams = @{
             Username = $Credential.Username
             Password = $Credential.GetNetworkCredential().Password #$Credential.Password
@@ -182,65 +188,12 @@ function Connect-IdoIt {
         Throw "PSCmdb needs minimum Version 1.7 to work. You are running i-doit $($CmdbVer.Major).$($CmdbVer.Minor)"
     }
 
-    # More work needed :-)
-    Try {
-       # $VerbosePreference = Continue
-        $CachePath = $env:APPDATA+"\.psidoit"
-        $CacheMetaDataFile = $CachePath + "\cachemetadata.json"
-        $CacheConstantFile = $CachePath + "\constantcache.json"
+    If ( -Not (Test-IdoitCacheFile -CacheType Constant -Expiry (New-Timespan -Days 30))) {
 
-        $ValidCache = $True
-
-        If ( -Not (Test-Path $CachePath ) ) {
-            New-Item -ItemType Directory -Path $CachePath
-        }
-
-        #Create a cache meta file to store cache age and some other stuff into it
-        Write-Verbose "Checking if cache metadata file exists"
-        If ( Test-Path -Path $CacheMetaDataFile ) {
-
-            Write-Verbose "Found existing metadata file. Loading content"
-            $CacheMetaData = Get-Content $CacheMetaDataFile -Encoding Default -Raw | ConvertFrom-Json
-            $MaxCacheAge = New-TimeSpan -Days 1
-            $TimeSpan = New-TimeSpan -Start ([Datetime]::parseexact($CacheMetaData.Created, "o", $Null))
-
-            If ($TimeSpan -gt $MaxCacheAge) {
-
-                Write-Verbose "Cache MaxAge reached - forcing rebuild of the cache"
-                $ValidCache = $False
-
-            } Else {
-
-                Write-Verbose "Cache MaxAge not reached - skipping rebuild of cache"
-                $ValidCache = $True
-
-            }
-
-        }
-        ElseIf ( (-Not $ValidCache ) -or ( -Not (Test-Path -Path $CacheMetaDataFile) ) ) {
-
-            $CacheMetaData = @{
-                Created = (Get-Date -Format o)
-            }
-
-            ConvertTo-Json -InputObject $CacheMetaData -Depth 2 | Out-File -FilePath $CacheMetaDataFile -Encoding default -Force:$True
-
-        }
-
-        If ( ( -not $ValidCache ) -or ( $ForceCacheRebuild ) -or (-Not (Test-Path -Path $CacheConstantFile)) ) {
-
-            Write-Verbose "Creating idoit constant cache file"
-            ConvertTo-Json -InputObject (Get-IdoItConstant) -Depth 2 | Out-File -FilePath ($CacheConstantFile) -Encoding default -Force:$True
-
-        }
-    }
-    Catch {
-
-        Throw $_
+        Write-Verbose "Updating idoit constant cache file"
+        New-IdoItCacheFile -CacheType Constant -CacheData (Get-IdoItConstant)
 
     }
-
 
     Return $LoginResult
 }
-

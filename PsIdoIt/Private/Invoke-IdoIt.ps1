@@ -79,6 +79,12 @@ Function Invoke-IdoIt {
         [Ref]$RawOutput
     )
 
+    # When –Debug is used, we will not get a prompt each time it is used :-) Thanks to Boe Prox
+    # https://learn-powershell.net/2014/06/01/prevent-write-debug-from-bugging-you/
+    If ($PSBoundParameters['Debug']) {
+        $DebugPreference = 'Continue'
+    }
+
     $RequestId = New-IdoItRequestId
 
     $RequestBody = @{
@@ -107,7 +113,7 @@ Function Invoke-IdoIt {
 
     $RequestBody = ConvertTo-Json -InputObject $RequestBody -Depth 4
 
-    Write-Verbose "Request body: $RequestBody"
+    Write-Debug "Request body: $RequestBody"
 
     If (!$PSBoundParameters.ContainsKey("Headers")) {
 
@@ -115,7 +121,7 @@ Function Invoke-IdoIt {
 
     }
 
-    Write-Verbose "Request headers: $($Headers | Out-String)"
+    Write-Debug "Request headers: $($Headers | Out-String)"
 
     #define higher tls version - otherwise tls1.0 will fail on more secure web sockets
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12

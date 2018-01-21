@@ -131,10 +131,7 @@ Function Get-IdoItCategory {
             $RuntimeParameterDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
             # Generate and set the ValidateSet
 
-            $CachePath = $env:APPDATA+"\.psidoit"
-            $CacheFile = "constantcache.json"
-
-            $Category = Get-Content -Path ($CachePath + "\" + $CacheFile) -Raw -Encoding Default | ConvertFrom-Json | Where-Object {(($_.type -eq "Global") -or ($_.type -eq "Specific"))}
+            $Category = Get-IdoitCacheFile -CacheType Constant | Where-Object {(($_.type -eq "Global") -or ($_.type -eq "Specific"))}
 
             $arrSet = $Category.Const
             $ValidateSetAttribute = New-Object System.Management.Automation.ValidateSetAttribute($arrSet)
