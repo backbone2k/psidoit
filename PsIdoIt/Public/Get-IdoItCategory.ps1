@@ -62,24 +62,28 @@ Function Get-IdoItCategory {
         0.1.1   06.01.2018  CB  Updated inline help; Added RawOuput parameter
         0.1.2   10.01.2018  CB  Fixed pipline behavoir for the Id parameter
         0.2.0   15.01.2018  CB  Added dynamic paramter category that pulls constant cache in the validate set
+        0.2.1   22.01.2018  CB  Fixed pipeline handling when piping a idoit.object
     #>
         [CmdletBinding()]
         Param (
             [Parameter (
                 Mandatory = $True,
                 ValueFromPipeline = $True,
+                ValueFromPipelineByPropertyName = $True,
                 Position=0,
                 ParameterSetName = "Category"
             )]
             [Parameter (
                 Mandatory = $True,
                 ValueFromPipeline = $True,
+                ValueFromPipelineByPropertyName = $True,
                 Position=0,
                 ParameterSetName = "CatgId"
             )]
             [Parameter (
                 Mandatory = $True,
                 ValueFromPipeline = $True,
+                ValueFromPipelineByPropertyName = $True,
                 Position=0,
                 ParameterSetName = "CatsId"
             )]
