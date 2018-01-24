@@ -1,59 +1,68 @@
 Function Get-IdoItObjectByFilter {
     <#
-        .SYNOPSIS
-        Get-IdoItObjectByFilter
+    .SYNOPSIS
+    Get-IdoItObjectByFilter
 
-        .DESCRIPTION
-        With Get-IdoItObjectByFilter you can get one or more objects from i-doit cmdb that can be filtered by type, name, sys-id etc.
+    .DESCRIPTION
+    With Get-IdoItObjectByFilter you can get one or more objects from i-doit cmdb that can be filtered by type, name, sys-id etc.
 
-        .PARAMETER Title
-        With Title you can fFilter objects by their title.
+    .PARAMETER Title
+    With Title you can fFilter objects by their title.
 
-        .PARAMETER Id
-        Set this parameter to filter objects by an array of object ids
+    .PARAMETER Id
+    Set this parameter to filter objects by an array of object ids
 
-        .PARAMETER TypeId
-        Set this parameter to filter objects by a type id.
+    .PARAMETER TypeId
+    Set this parameter to filter objects by a type id.
 
-        .PARAMETER SysId
-        Filter objects by their sys id value.
+    .PARAMETER SysId
+    Filter objects by their sys id value.
 
-        .PARAMETER TypeTitle
-        Withe TypeTitle you can filter objects by type title.
+    .PARAMETER TypeTitle
+    Withe TypeTitle you can filter objects by type title.
 
-        .PARAMETER FirstName
-        Search for person objects by and filter by first name.
+    .PARAMETER FirstName
+    Search for person objects by and filter by first name.
 
-        .PARAMETER LastName
-        Search for person objects by and filter by last name.
+    .PARAMETER LastName
+    Search for person objects by and filter by last name.
 
-        .PARAMETER Email
-        Search for person objects by and filter by email adress.
+    .PARAMETER Email
+    Search for person objects by and filter by email adress.
 
-        .PARAMETER Limit
-        With limit you can recuce the number of results you get back. Without Limit you get all objects that match your filter.
+    .PARAMETER Limit
+    With limit you can recuce the number of results you get back. Without Limit you get all objects that match your filter.
 
-        .PARAMETER Sort
-        If you set the parameter sort objects will be ordered by the the property you define with the parameter OrderBy
+    .PARAMETER Sort
+    If you set the parameter sort objects will be ordered by the the property you define with the parameter OrderBy
 
-        .PARAMETER OrderBy
-        With order by you can define what property is used for sorting objects in the result. Default is ID. The possbile values are
-        "Id","TypeID","Title","TypeTitle","SysId","FirstName","LastName","Email"
+    .PARAMETER OrderBy
+    With order by you can define what property is used for sorting objects in the result. Default is ID. The possbile values are
+    "Id","TypeID","Title","TypeTitle","SysId","FirstName","LastName","Email"
 
-        .EXAMPLE
-        PS> Get-IdoItObjectByFilter -Title "web%" -Sort -OrderBy SysId
+    .PARAMETER RawOutput
+    You can provide a [Ref] parameter to the function to get back the raw response from the invoke to the I-doIt API.
 
-        This will get all objects that begin with web in the title. The result is sorted by sysid
+    You have to put the parameter in parantheses like this:
+    -RawOutput ([Ref]$Output)
 
-        .EXAMPLE
-        PS> Get-IdoItObjectByFilter -Email "john.doe@acme.com"
+    The return value is [Microsoft.PowerShell.Commands.HtmlWebResponseObject
 
-        In this example you will get all perons with the email address <john.doe@acme.com>
+    .EXAMPLE
+    PS> Get-IdoItObjectByFilter -Title "web%" -Sort -OrderBy SysId
 
-        .NOTES
-        Version
-        0.1.0   29.12.2017  CB  initial release
-        0.2.0   10.01.2018  CB  Added Titel SupportWildcards.
+    This will get all objects that begin with web in the title. The result is sorted by sysid
+
+    .EXAMPLE
+    PS> Get-IdoItObjectByFilter -Email "john.doe@acme.com"
+
+    In this example you will get all perons with the email address <john.doe@acme.com>
+
+    .NOTES
+    Version
+    0.1.0   29.12.2017  CB  initial release
+    0.2.0   10.01.2018  CB  Added Titel SupportWildcards.
+    0.3.0   24.01.2018  CB  Added Support for RawOutput; Added ReturnObject conversion; Changed to splatting
     #>
         Param (
             [Parameter (
@@ -64,11 +73,17 @@ Function Get-IdoItObjectByFilter {
             [SupportsWildcards()]
             [String]$Title,
 
-            [Parameter(Mandatory=$false, ParameterSetName = "NonPerson")]
-            [int[]]$Id,
+            [Parameter (
+                Mandatory = $False,
+                ParameterSetName = "NonPerson"
+            )]
+            [Int[]]$Id,
 
-            [Parameter(Mandatory=$false, ParameterSetName = "NonPerson")]
-            [int]$TypeId,
+            [Parameter (
+                Mandatory = $False,
+                ParameterSetName = "NonPerson"
+            )]
+            [Int]$TypeId,
 
             [Parameter(Mandatory=$false, ParameterSetName = "NonPerson")]
             [string]$SysId,
@@ -93,22 +108,37 @@ Function Get-IdoItObjectByFilter {
 
             [Parameter(Mandatory=$false)]
             [ValidateSet("Id","TypeID","Title","TypeTitle","SysId","FirstName","LastName","Email")]
-            [String]$OrderBy="Id"
-        )
+            [String]$OrderBy="Id",
 
-        #checkCmdbConnection
+            [Parameter (
+                Mandatory = $False
+            )]
+            [Ref]$RawOutput
+        )
 
         $Filter = @{}
 
         ForEach ($PSBoundParameter in $PSBoundParameters.Keys) {
 
-            Switch ($PSBoundParameter) {
-                "Id" { $Filter.Add("ids", $Id); break }
-                "TypeId" {$Filter.Add("type", $TypeId); break }
+            Switch ($PSBoundParameter)
+            {
+                "Id"
+                {
+                    $Filter.Add("ids", $Id)
+                    Break
+                }
+
+                "TypeId"
+                 {
+                    $Filter.Add("type", $TypeId)
+                    Break
+                }
+
                 "Title" {
                     $Filter.Add("title", ( ConvertTo-IdoItSQLWildcard -InputString $Title ))
                     Break
                 }
+
                 "SysID" { $Filter.Add("sysid", $SysId); break }
                 "TypeTitle" { $Filter.Add("type_title", $TypeTitle); break }
                 "FirstName" { $Filter.Add("first_name", $FirstName); break }
@@ -121,16 +151,42 @@ Function Get-IdoItObjectByFilter {
         $Params.Add("filter", $Filter)
 
         If ($PSBoundParameters.ContainsKey('Limit')) {
+
             $Params.Add("limit", $Limit)
+
         }
 
         If ($PSBoundParameters.ContainsKey('Sort')) {
+
             $Params.Add("Sort", 1)
             $Params.Add("order_by", $OrderBy)
+
         }
 
-        $ResultObj = Invoke-IdoIt -Method "cmdb.objects.read" -Params $Params
+        $SplattingParameter = @{
+            Method = "cmdb.objects.read"
+            Params = $Params
+        }
 
+        If ($PSBoundParameters.ContainsKey("RawOutput"))
+        {
+
+            $SplattingParameter.Add("RawOutput", $RawOutput)
+
+        }
+
+        Try {
+
+            $ResultObj = Invoke-IdoIt @SplattingParameter
+
+        }
+        Catch [Exception] {
+
+            Throw $_
+
+        }
+
+        $ResultObj = $ResultObj | ConvertFrom-IdoItResultObject
         $ResultObj = $ResultObj | Add-ObjectTypeName -TypeName 'Idoit.Object'
 
         Return $ResultObj
