@@ -25,14 +25,14 @@ Function Get-IdoItCacheFile {
        [Parameter (
            Mandatory = $True
        )]
-       [ValidateSet('Constant','Config')]
+       [ValidateSet('Constant','Settings')]
        [String]$CacheType
    )
 
    Begin {
            # $VerbosePreference = Continue
            $CachePath = $env:LOCALAPPDATA+"\.psidoit"
-           $CacheFile = $CachePath + "\$CacheType.json"
+           $CacheFile = $CachePath + "\$($CacheType.ToLower()).json"
            #CacheFile = $CachePath + "\Constant.json"
 
 
@@ -43,11 +43,11 @@ Function Get-IdoItCacheFile {
        Try {
 
 
-        If ( (Test-Path $CacheFile ) ) {
+            If ( (Test-Path $CacheFile ) ) {
 
-            Return (Get-Content -Path $CacheFile -Raw -Encoding Default | ConvertFrom-Json).Data.Value
+                Return (Get-Content -Path $CacheFile -Raw -Encoding Default | ConvertFrom-Json).Data
 
-        }
+            }
 
 
        }

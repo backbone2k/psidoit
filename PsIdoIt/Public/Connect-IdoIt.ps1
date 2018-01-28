@@ -53,12 +53,14 @@ function Connect-IdoIt {
     0.4.0   15.01.2018  CB  Beginning to include caching of some static env constants etc. to the user dir
 #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidGlobalVars", "")]
-    [Cmdletbinding()]
+    [Cmdletbinding(
+        DefaultParameterSetName="All"
+    )]
 
     Param(
         [Parameter (
             Mandatory = $True,
-            ParameterSetName = "SetA"
+            ParameterSetName = "Credential"
         )]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
@@ -66,21 +68,21 @@ function Connect-IdoIt {
 
         [Parameter (
             Mandatory = $True,
-            ParameterSetName = "SetA",
+            ParameterSetName = "Credential",
             Position = 3
         )]
         [String]$ApiKey,
 
         [Parameter (
             Mandatory = $True,
-            ParameterSetName = "SetA",
+            ParameterSetName = "Credential",
             Position = 4
         )]
         [String]$Uri,
 
         [Parameter (
             Mandatory = $True,
-            ParameterSetName = "SetB",
+            ParameterSetName = "Hashtable",
             Position = 0
         )]
         [ValidateScript ({
@@ -92,7 +94,7 @@ function Connect-IdoIt {
 
         [Parameter (
             Mandatory = $True,
-            ParameterSetName = "SetC",
+            ParameterSetName = "ConfigFile",
             Position = 0
         )]
         [ValidateNotNullOrEmpty()]
@@ -122,7 +124,7 @@ function Connect-IdoIt {
         $DebugPreference = 'Continue'
     }
 
-    If ($PSCmdlet.ParameterSetName -eq "SetA") {
+    If ($PSCmdlet.ParameterSetName -eq "Credential") {
         $SettingsParams = @{
             Username = $Credential.Username
             Password = $Credential.GetNetworkCredential().Password #$Credential.Password
@@ -130,15 +132,24 @@ function Connect-IdoIt {
             Uri = $Uri
         }
 
-    } ElseIf ($PSCmdlet.ParameterSetName -eq "SetC") {
-        $SettingsParams = Get-Content $ConfigFile -Raw | ConvertFrom-Json
+    }
+    ElseIf ($PSCmdlet.ParameterSetName -eq "ConfigFile") {
+        $SettingsParams = (Get-Content $ConfigFile -Raw | ConvertFrom-Json).Data
         $SecurePassword = ConvertTo-SecureString $SettingsParams.Password
         $Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $SettingsParams.Username, $SecurePassword
 
         $SettingsParams.Password = $Credential.GetNetworkCredential().Password
 
-    }
+        New-Variable -Name IdoItConfigUrl -Scope Global -Value (Resolve-Path $ConfigFile).Path -Force:$True
 
+    }
+    ElseIf ($PSCmdlet.ParameterSetName -eq "All") {
+        $SettingsParams = (Get-IdoitCacheFile -CacheType Settings)
+        $SecurePassword = ConvertTo-SecureString $SettingsParams.Password
+        $Credential = New-Object System.Management.Automation.PSCredential -ArgumentList $SettingsParams.Username, $SecurePassword
+
+        $SettingsParams.Password = $Credential.GetNetworkCredential().Password
+    }
     Else {
         $SettingsParams = $Settings
     }

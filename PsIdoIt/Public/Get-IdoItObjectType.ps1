@@ -4,11 +4,11 @@ Function Get-IdoItObjectType {
     Get-IdoItObjectType
 
     .DESCRIPTION
-    Get-IdoItObjectType returns available object types. If you provide no parameters you will get all availabke
+    Get-IdoItObjectType returns available object types. If you provide no parameters you will get all available
     object types from idoit.
 
     .PARAMETER Id
-    If provided the result will be filtered these Ids
+    If provided the result will be filtered by these ids
 
     .PARAMETER Title
     If provided the result will be filtered by title

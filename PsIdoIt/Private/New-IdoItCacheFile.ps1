@@ -13,6 +13,9 @@ Function New-IdoItCacheFile {
     .PARAMETER CacheType
     CacheType defines wich type of cache to be written.
 
+    .PARAMETER PassThrough
+    Instead of writing the data to the default LOCALUSER location you can get the JSON data back and handle it by your own.
+
     .EXAMPLE
     PS> New-IdoItCacheFile -CacheType Constant -CacheData (Get-IdoItConstant)
 
@@ -36,15 +39,17 @@ Function New-IdoItCacheFile {
         [Parameter (
             Mandatory = $True
         )]
-        [ValidateSet('Constant','Config')]
-        [String]$CacheType
+        [ValidateSet('Constant','Settings')]
+        [String]$CacheType,
+
+        [Switch]$PassThrough
     )
 
     Begin {
             # $VerbosePreference = Continue
             $CachePath = $env:LOCALAPPDATA+"\.psidoit"
             #$CacheMetaDataFile = $CachePath + "\cachemetadata.json"
-            $CacheFile = $CachePath + "\$CacheType.json"
+            $CacheFile = $CachePath + "\$($CacheType.ToLower()).json"
 
 
             $CacheDataObject = [PSCustomObject]@{
@@ -57,17 +62,21 @@ Function New-IdoItCacheFile {
     # More work needed :-)
         Try {
 
+            If ( -Not $PassThrough ) {
+                If ( -Not (Test-Path $CachePath ) ) {
 
-            If ( -Not (Test-Path $CachePath ) ) {
+                    New-Item -ItemType Directory -Path $CachePath
 
-                New-Item -ItemType Directory -Path $CachePath
+                }
+
+                Write-Verbose "Creating idoit cache file"
+                ConvertTo-Json -InputObject $CacheDataObject -Depth 4 | Out-File -FilePath ($CacheFile) -Encoding default -Force:$True
+            }
+            Else {
+
+                Return ConvertTo-Json -InputObject $CacheDataObject -Depth 4
 
             }
-
-
-
-            Write-Verbose "Creating idoit cache file"
-            ConvertTo-Json -InputObject $CacheDataObject -Depth 4 | Out-File -FilePath ($CacheFile) -Encoding default -Force:$True
 
         }
         Catch [Exeption] {

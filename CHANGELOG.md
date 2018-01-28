@@ -1,6 +1,7 @@
 #Changelog
 
 ##v0.1.0.5x - 01/xx/2018
+- Added: New-IdoitConfig: You now can create a settings file that is stored in your home directory.
 - Fixed: Get-IdoItCategory pipeline did not accept idoit.object type. Now it is working :-)
 
 ##v0.1.0.54 - 01/21/2018
