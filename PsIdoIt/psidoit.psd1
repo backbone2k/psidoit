@@ -11,8 +11,13 @@
 # Die diesem Manifest zugeordnete Skript- oder Binärmoduldatei.
 RootModule = 'PsIdoIt.psm1'
 
+<<<<<<< HEAD
 # Die Versionsnummer dieses Moduls
 ModuleVersion = '0.1.0.56'
+=======
+# Version number of this module.
+ModuleVersion = '0.1.0.57'
+>>>>>>> 3fff5fc60c221c04a6ef70c13682f80ad9ade59d
 
 # Unterstützte PSEditions
 # CompatiblePSEditions = @()
